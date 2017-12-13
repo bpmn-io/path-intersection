@@ -9,6 +9,15 @@
     "dev": "npm test -- --auto-watch --no-single-run",
     "test": "karma start"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bpmn-io/path-intersection"
+  },
+  "keywords": [
+    "svg",
+    "path",
+    "path intersection"
+  ],
   "author": {
     "name": "Nico Rehwaldt",
     "url": "https://github.com/nikku"
