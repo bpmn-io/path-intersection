@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * This file contains portions that got extraced from Snap.svg (licensed Apache-2.0).
+ *
+ * @see https://github.com/adobe-webplatform/Snap.svg/blob/master/src/path.js
+ */
+
 /* eslint no-fallthrough: "off" */
 
 var has = 'hasOwnProperty',

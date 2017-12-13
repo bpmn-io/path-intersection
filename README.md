@@ -34,6 +34,11 @@ npm run all
 ```
 
 
+## Credits
+
+The intersection logic provided by this library is derived from [`path.js`](https://github.com/adobe-webplatform/Snap.svg/blob/master/src/path.js), a part of [Snap.svg](https://github.com/adobe-webplatform/Snap.svg).
+
+
 ## License
 
 Use under the terms of the [MIT license](http://opensource.org/licenses/MIT).
