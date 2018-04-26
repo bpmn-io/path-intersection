@@ -1,0 +1,6 @@
+{
+  "extends": "plugin:bpmn-io/mocha",
+  "env": {
+    "browser": true
+  }
+}

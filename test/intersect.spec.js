@@ -187,7 +187,7 @@ describe('path-intersection', function() {
 
 
 
-//////////// helpers //////////////////////////////////
+// helpers //////////////////////////////////
 
 function expectIntersection(intersection, expected) {
 

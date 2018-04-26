@@ -31,10 +31,10 @@ function is(o, type) {
     return true;
   }
 
-  return  (type == 'null' && o === null) ||
-          (type == typeof o && o !== null) ||
-          (type == 'object' && o === Object(o)) ||
-          Object.prototype.toString.call(o).slice(8, -1).toLowerCase() == type;
+  return (type == 'null' && o === null) ||
+         (type == typeof o && o !== null) ||
+         (type == 'object' && o === Object(o)) ||
+         Object.prototype.toString.call(o).slice(8, -1).toLowerCase() == type;
 }
 
 function clone(obj) {
@@ -808,7 +808,7 @@ function catmulRomToBezier(crp, z) {
   for (var i = 0, iLen = crp.length; iLen - 2 * !z > i; i += 2) {
     var p = [
       { x: +crp[i - 2], y: +crp[i - 1] },
-      { x: +crp[i],     y: +crp[i + 1] },
+      { x: +crp[i], y: +crp[i + 1] },
       { x: +crp[i + 2], y: +crp[i + 3] },
       { x: +crp[i + 4], y: +crp[i + 5] }
     ];
@@ -955,22 +955,30 @@ function pathToCurve(path, path2) {
           path = ['C'].concat(arcToCurve.apply(0, [d.x, d.y].concat(path.slice(1))));
           break;
         case 'S':
-          if (pcom == 'C' || pcom == 'S') { // In 'S' case we have to take into account, if the previous command is C/S.
-            nx = d.x * 2 - d.bx;          // And reflect the previous
-            ny = d.y * 2 - d.by;          // command's control point relative to the current point.
+          if (pcom == 'C' || pcom == 'S') {
+            // In 'S' case we have to take into account, if the previous command is C/S.
+            nx = d.x * 2 - d.bx;
+            // And reflect the previous
+            ny = d.y * 2 - d.by;
+            // command's control point relative to the current point.
           }
-          else {                            // or some else or nothing
+          else {
+            // or some else or nothing
             nx = d.x;
             ny = d.y;
           }
           path = ['C', nx, ny].concat(path.slice(1));
           break;
         case 'T':
-          if (pcom == 'Q' || pcom == 'T') { // In 'T' case we have to take into account, if the previous command is Q/T.
-            d.qx = d.x * 2 - d.qx;        // And make a reflection similar
-            d.qy = d.y * 2 - d.qy;        // to case 'S'.
+          if (pcom == 'Q' || pcom == 'T') {
+            // In 'T' case we have to take into account, if the previous command is Q/T.
+            d.qx = d.x * 2 - d.qx;
+            // And make a reflection similar
+            d.qy = d.y * 2 - d.qy;
+            // to case 'S'.
           }
-          else {                            // or something else or nothing
+          else {
+            // or something else or nothing
             d.qx = d.x;
             d.qy = d.y;
           }
@@ -1038,7 +1046,7 @@ function pathToCurve(path, path2) {
     if (pfirst != 'C') // C is not saved yet, because it may be result of conversion
     {
       pcoms1[i] = pfirst; // Save current path command
-      i && ( pcom = pcoms1[i - 1]); // Get previous path command pcom
+      i && (pcom = pcoms1[i - 1]); // Get previous path command pcom
     }
     p[i] = processPath(p[i], attrs, pcom); // Previous path command is inputted to processPath
 
