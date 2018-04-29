@@ -3,6 +3,7 @@
   "version": "1.0.2",
   "description": "Computes the intersection between two SVG paths",
   "main": "intersect.js",
+  "types": "intersect.d.ts",
   "scripts": {
     "all": "run-s lint test",
     "lint": "eslint .",
