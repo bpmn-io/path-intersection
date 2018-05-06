@@ -7,6 +7,41 @@ var domify = require('domify');
 
 describe('path-intersection', function() {
 
+  describe('api', function() {
+
+    var p1 = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ];
+    var p2 = 'M0,100L100,0';
+
+
+    it('should support SVG path and component args', function() {
+
+      // when
+      var intersections = intersect(p1, p2);
+
+      // then
+      expect(intersections).to.have.length(1);
+    });
+
+
+    it('should expose intersection', function() {
+
+      // when
+      var intersection = intersect(p1, p2)[0];
+
+      // then
+      expect(intersection.x).to.eql(50);
+      expect(intersection.y).to.eql(50);
+      expect(intersection.segment1).to.eql(1);
+      expect(intersection.segment2).to.eql(1);
+      expect(intersection.t1).to.eql(0.5);
+      expect(intersection.t2).to.eql(0.5);
+      expect(intersection.bez1).to.exist;
+      expect(intersection.bez2).to.exist;
+    });
+
+  });
+
+
   describe('specs', function() {
 
     test('line with rounded rectangle (edge)', {
@@ -18,12 +53,14 @@ describe('path-intersection', function() {
         'a10,10,0,0,1,-10,-10l0,-60' +
         'a10,10,0,0,1,10,-10z'
       ),
-      expectedIntersection: {
-        x: 90,
-        y: 140,
-        segment1: 1,
-        segment2: 7
-      }
+      expectedIntersections: [
+        {
+          x: 90,
+          y: 140,
+          segment1: 1,
+          segment2: 7
+        }
+      ]
     });
 
 
@@ -36,7 +73,9 @@ describe('path-intersection', function() {
         'a10,10,0,0,1,-10,-10l0,-60' +
         'a10,10,0,0,1,10,-10z'
       ),
-      expectedIntersection: { x: 91, y: 105, segment1: 1, segment2: 8 }
+      expectedIntersections: [
+        { x: 91, y: 105, segment1: 1, segment2: 8 }
+      ]
     });
 
 
@@ -49,7 +88,9 @@ describe('path-intersection', function() {
         'a10,10,0,0,1,-10,-10l0,-60' +
         'a10,10,0,0,1,10,-10z'
       ),
-      expectedIntersection: { x: 93, y: 103, segment1: 1, segment2: 8 }
+      expectedIntersections: [
+        { x: 93, y: 103, segment1: 1, segment2: 8 }
+      ]
     });
 
 
@@ -62,49 +103,77 @@ describe('path-intersection', function() {
         'a10,10,0,0,1,-10,-10l0,-60' +
         'a10,10,0,0,1,10,-10z'
       ),
-      expectedIntersection: { x: 184, y: 101, segment1: 1, segment2: 2 }
+      expectedIntersections: [
+        { x: 184, y: 101, segment1: 1, segment2: 2 },
+        { x: 187, y: 103, segment1: 1, segment2: 2 }
+      ]
     });
 
 
     test('line with circle', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M100,100L150,150',
-      expectedIntersection: { x: 137, y: 137, segment1: 5, segment2: 1 }
+      expectedIntersections: [
+        { x: 137, y: 137, segment1: 5, segment2: 1 }
+      ]
     });
 
 
     test('line with circle (top)', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M150,100L150,150',
-      expectedIntersection: { x: 150, y: 132, segment1: 2, segment2: 1 }
+      expectedIntersections: [
+        { x: 150, y: 132, segment1: 2, segment2: 1 },
+        { x: 150, y: 132, segment1: 5, segment2: 1 }
+      ]
     });
 
 
     test('line with circle (bottom)', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M150,150L150,200',
-      expectedIntersection: { x: 150, y: 168, segment1: 4, segment2: 1 }
+      expectedIntersections: [
+        { x: 150, y: 168, segment1: 4, segment2: 1 }
+      ]
     });
 
 
     test('line with circle (left)', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M100,150L150,150',
-      expectedIntersection: { x: 132, y: 150, segment1: 4, segment2: 1 }
+      expectedIntersections: [
+        { x: 132, y: 150, segment1: 4, segment2: 1 }
+      ]
     });
 
 
     test('line with circle (right)', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M150,150L200,150',
-      expectedIntersection: { x: 168, y: 150, segment1: 2, segment2: 1 }
+      expectedIntersections: [
+        { x: 168, y: 150, segment1: 2, segment2: 1 }
+      ]
     });
 
 
     test('line with diamond', {
       p0: 'M413,172l25,25l-25,25l-25,-25z',
       p1: 'M413,197L413,274L555,274',
-      expectedIntersection: { x: 413, y: 222, segment1: 2, segment2: 1 }
+      expectedIntersections: [
+        { x: 413, y: 222, segment1: 2, segment2: 1 },
+        { x: 413, y: 222, segment1: 3, segment2: 1 }
+      ]
+    });
+
+
+    test('cut-through line with diamond', {
+      p0: 'M413,172l25,25l-25,25l-25,-25z',
+      p1: 'M413,97L413,274',
+      expectedIntersections: [
+        { x: 413, y: 172, segment1: 1, segment2: 1 },
+        { x: 413, y: 222, segment1: 2, segment2: 1 },
+        { x: 413, y: 222, segment1: 3, segment2: 1 }
+      ]
     });
 
   });
@@ -189,16 +258,18 @@ describe('path-intersection', function() {
 
 // helpers //////////////////////////////////
 
-function expectIntersection(intersection, expected) {
+function expectIntersection(intersections, expected) {
 
-  var filteredIntersection = {
-    x: Math.round(intersection.x),
-    y: Math.round(intersection.y),
-    segment1: intersection.segment1,
-    segment2: intersection.segment2
-  };
+  var normalizedIntersections = intersections.map(function(i) {
+    return {
+      x: Math.round(i.x),
+      y: Math.round(i.y),
+      segment1: i.segment1,
+      segment2: i.segment2
+    };
+  });
 
-  expect(filteredIntersection).to.eql(expected);
+  expect(normalizedIntersections).to.eql(expected);
 }
 
 function debug(label, pathArray, intersectionsArray, fail) {
@@ -290,28 +361,29 @@ function createTest(it, label, options) {
   it(label, function() {
     var p0 = options.p0,
         p1 = options.p1,
-        expectedIntersection = options.expectedIntersection;
+        expectedIntersections = options.expectedIntersections;
 
     // guard
     expect(p0).to.exist;
     expect(p1).to.exist;
-    expect(expectedIntersection).to.exist;
+    expect(expectedIntersections).to.exist;
 
     // when
-    var intersection = intersect(p0, p1);
+    var intersections = intersect(p0, p1);
+    var intersectionsCount = intersect(p0, p1, true);
 
     var err;
 
     // then
     try {
-      expect(intersection.length > 0).to.be.true;
+      expectIntersection(intersections, expectedIntersections);
 
-      expectIntersection(intersection[0], expectedIntersection);
+      expect(intersections).to.have.length(intersectionsCount);
     } catch (e) {
       err = e;
     }
 
-    debug(label, [ p0, p1 ], [ intersection ], err);
+    debug(label, [ p0, p1 ], [ intersections ], err);
 
     if (err) {
       throw err;
