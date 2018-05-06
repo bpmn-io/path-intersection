@@ -24,6 +24,8 @@ var intersection = intersect(path0, path1);
 // [ { x: ..., y: ..., segment1: ..., segment2: ... }, ... ]
 ```
 
+Results are approximate, as we use [bezier clipping](https://math.stackexchange.com/questions/118937) to find intersections.
+
 
 ## Building the Project
 
