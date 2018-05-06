@@ -272,6 +272,20 @@ function testScenario(paths) {
 }
 
 function test(label, options) {
+  createTest(it, label, options);
+}
+
+// eslint-disable-next-line no-unused-vars
+function testOnly(label, options) {
+  createTest(it.only, label, options);
+}
+
+// eslint-disable-next-line no-unused-vars
+function testSkip(label, options) {
+  createTest(it.skip, label, options);
+}
+
+function createTest(it, label, options) {
 
   it(label, function() {
     var p0 = options.p0,
