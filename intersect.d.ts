@@ -29,10 +29,12 @@
  *
  * @return {Array<Intersection>|Number}
  */
-export default function findPathIntersections(path1: Path, path2: Path, justCount: true): number;
-export default function findPathIntersections(path1: Path, path2: Path, justCount: false): Intersection[];
-export default function findPathIntersections(path1: Path, path2: Path): Intersection[];
-export default function findPathIntersections(path1: Path, path2: Path, justCount?: boolean): Intersection[] | number;
+declare function findPathIntersections(path1: Path, path2: Path, justCount: true): number;
+declare function findPathIntersections(path1: Path, path2: Path, justCount: false): Intersection[];
+declare function findPathIntersections(path1: Path, path2: Path): Intersection[];
+declare function findPathIntersections(path1: Path, path2: Path, justCount?: boolean): Intersection[] | number;
+
+export = findPathIntersections;
 
 /**
  * A string in the form of 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z'
@@ -45,10 +47,10 @@ export default function findPathIntersections(path1: Path, path2: Path, justCoun
  *  ['z']
  * ]
  */
-export type Path = string | PathComponent[];
-export type PathComponent = any[];
+declare type Path = string | PathComponent[];
+declare type PathComponent = any[];
 
-export interface Intersection {
+declare interface Intersection {
   /**
    * Segment of first path.
    */
