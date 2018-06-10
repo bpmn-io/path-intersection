@@ -6,9 +6,13 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 1.1.1
+
+* `FIX`: correct TypeScript definitions to match export
+
 ## 1.1.0
 
-* `FEAT`: add Typescript definitions
+* `FEAT`: add TypeScript definitions
 
 ## ...
 
