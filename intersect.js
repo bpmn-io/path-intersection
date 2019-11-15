@@ -93,7 +93,7 @@ function parsePathString(pathString) {
     return clone(pth.arr);
   }
 
-  var paramCounts = { a: 7, c: 6, o: 2, h: 1, l: 2, m: 2, r: 4, q: 4, s: 4, t: 2, v: 1, u: 3, z: 0 },
+  var paramCounts = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
       data = [];
 
   if (is(pathString, 'array') && is(pathString[0], 'array')) { // rough assumption
@@ -116,13 +116,7 @@ function parsePathString(pathString) {
         b = b == 'm' ? 'l' : 'L';
       }
 
-      if (name == 'o' && params.length == 1) {
-        data.push([b, params[0]]);
-      }
-
-      if (name == 'r') {
-        data.push([b].concat(params));
-      } else while (params.length >= paramCounts[name]) {
+      while (params.length >= paramCounts[name]) {
         data.push([b].concat(params.splice(0, paramCounts[name])));
         if (!paramCounts[name]) {
           break;
@@ -530,39 +524,6 @@ function rectPath(x, y, w, h, r) {
   return res;
 }
 
-function ellipsePath(x, y, rx, ry, a) {
-  if (a == null && ry == null) {
-    ry = rx;
-  }
-
-  x = +x;
-  y = +y;
-  rx = +rx;
-  ry = +ry;
-
-  if (a != null) {
-    var rad = Math.PI / 180,
-        x1 = x + rx * Math.cos(-ry * rad),
-        x2 = x + rx * Math.cos(-a * rad),
-        y1 = y + rx * Math.sin(-ry * rad),
-        y2 = y + rx * Math.sin(-a * rad),
-        res = [['M', x1, y1], ['A', rx, rx, 0, +(a - ry > 180), 0, x2, y2]];
-  } else {
-    res = [
-      ['M', x, y],
-      ['m', 0, -ry],
-      ['a', rx, ry, 0, 1, 1, 0, 2 * ry],
-      ['a', rx, ry, 0, 1, 1, 0, -2 * ry],
-      ['z']
-    ];
-  }
-
-  res.toString = pathToString;
-
-  return res;
-}
-
-
 function pathToAbsolute(pathArray) {
   var pth = paths(pathArray);
 
@@ -595,11 +556,6 @@ function pathToAbsolute(pathArray) {
     res[0] = ['M', x, y];
   }
 
-  var crz = pathArray.length == 3 &&
-      pathArray[0][0] == 'M' &&
-      pathArray[1][0].toUpperCase() == 'R' &&
-      pathArray[2][0].toUpperCase() == 'Z';
-
   for (var r, pa, i = start, ii = pathArray.length; i < ii; i++) {
     res.push(r = []);
     pa = pathArray[i];
@@ -624,78 +580,38 @@ function pathToAbsolute(pathArray) {
       case 'H':
         r[1] = +pa[1] + x;
         break;
-      case 'R':
-        var dots = [x, y].concat(pa.slice(1));
-
-        for (var j = 2, jj = dots.length; j < jj; j++) {
-          dots[j] = +dots[j] + x;
-          dots[++j] = +dots[j] + y;
-        }
-
-        res.pop();
-        res = res.concat(catmulRomToBezier(dots, crz));
-        break;
-      case 'O':
-        res.pop();
-        dots = ellipsePath(x, y, pa[1], pa[2]);
-        dots.push(dots[0]);
-        res = res.concat(dots);
-        break;
-      case 'U':
-        res.pop();
-        res = res.concat(ellipsePath(x, y, pa[1], pa[2], pa[3]));
-        r = ['U'].concat(res[res.length - 1].slice(-2));
-        break;
       case 'M':
         mx = +pa[1] + x;
         my = +pa[2] + y;
       default:
-
-        for (j = 1, jj = pa.length; j < jj; j++) {
+        for (var j = 1, jj = pa.length; j < jj; j++) {
           r[j] = +pa[j] + ((j % 2) ? x : y);
         }
       }
-    } else if (pa0 == 'R') {
-      dots = [x, y].concat(pa.slice(1));
-      res.pop();
-      res = res.concat(catmulRomToBezier(dots, crz));
-      r = ['R'].concat(pa.slice(-2));
-    } else if (pa0 == 'O') {
-      res.pop();
-      dots = ellipsePath(x, y, pa[1], pa[2]);
-      dots.push(dots[0]);
-      res = res.concat(dots);
-    } else if (pa0 == 'U') {
-      res.pop();
-      res = res.concat(ellipsePath(x, y, pa[1], pa[2], pa[3]));
-      r = ['U'].concat(res[res.length - 1].slice(-2));
     } else {
-
       for (var k = 0, kk = pa.length; k < kk; k++) {
         r[k] = pa[k];
       }
     }
     pa0 = pa0.toUpperCase();
 
-    if (pa0 != 'O') {
-      switch (r[0]) {
-      case 'Z':
-        x = +mx;
-        y = +my;
-        break;
-      case 'H':
-        x = r[1];
-        break;
-      case 'V':
-        y = r[1];
-        break;
-      case 'M':
-        mx = r[r.length - 2];
-        my = r[r.length - 1];
-      default:
-        x = r[r.length - 2];
-        y = r[r.length - 1];
-      }
+    switch (r[0]) {
+    case 'Z':
+      x = +mx;
+      y = +my;
+      break;
+    case 'H':
+      x = r[1];
+      break;
+    case 'V':
+      y = r[1];
+      break;
+    case 'M':
+      mx = r[r.length - 2];
+      my = r[r.length - 1];
+    default:
+      x = r[r.length - 2];
+      y = r[r.length - 1];
     }
   }
 
@@ -829,52 +745,6 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
 
     return newres;
   }
-}
-
-// http://schepers.cc/getting-to-the-point
-function catmulRomToBezier(crp, z) {
-  var d = [];
-
-  for (var i = 0, iLen = crp.length; iLen - 2 * !z > i; i += 2) {
-    var p = [
-      { x: +crp[i - 2], y: +crp[i - 1] },
-      { x: +crp[i], y: +crp[i + 1] },
-      { x: +crp[i + 2], y: +crp[i + 3] },
-      { x: +crp[i + 4], y: +crp[i + 5] }
-    ];
-
-    if (z) {
-
-      if (!i) {
-        p[0] = { x: +crp[iLen - 2], y: +crp[iLen - 1] };
-      } else if (iLen - 4 == i) {
-        p[3] = { x: +crp[0], y: +crp[1] };
-      } else if (iLen - 2 == i) {
-        p[2] = { x: +crp[0], y: +crp[1] };
-        p[3] = { x: +crp[2], y: +crp[3] };
-      }
-
-    } else {
-
-      if (iLen - 4 == i) {
-        p[3] = p[2];
-      } else if (!i) {
-        p[0] = { x: +crp[i], y: +crp[i + 1] };
-      }
-
-    }
-
-    d.push(['C',
-      (-p[0].x + 6 * p[1].x + p[2].x) / 6,
-      (-p[0].y + 6 * p[1].y + p[2].y) / 6,
-      (p[1].x + 6 * p[2].x - p[3].x) / 6,
-      (p[1].y + 6*p[2].y - p[3].y) / 6,
-      p[2].x,
-      p[2].y
-    ]);
-  }
-
-  return d;
 }
 
 // Returns bounding box of cubic bezier curve.
