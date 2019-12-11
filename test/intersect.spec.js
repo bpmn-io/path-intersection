@@ -133,6 +133,7 @@ describe('path-intersection', function() {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
       p1: 'M150,150L150,200',
       expectedIntersections: [
+        { x: 150, y: 168, segment1: 3, segment2: 1 },
         { x: 150, y: 168, segment1: 4, segment2: 1 }
       ]
     });
@@ -172,7 +173,17 @@ describe('path-intersection', function() {
       expectedIntersections: [
         { x: 413, y: 172, segment1: 1, segment2: 1 },
         { x: 413, y: 222, segment1: 2, segment2: 1 },
-        { x: 413, y: 222, segment1: 3, segment2: 1 }
+        { x: 413, y: 222, segment1: 3, segment2: 1 },
+        { x: 413, y: 172, segment1: 4, segment2: 1 }
+      ]
+    });
+
+
+    test('line end on line', {
+      p0: 'M170,150l80,0a10,10,0,0,1,10,10l0,60a10,10,0,0,1,-10,10l-80,0a10,10,0,0,1,-10,-10l0,-60a10,10,0,0,1,10,-10z',
+      p1: 'M140,190L160,190',
+      expectedIntersections: [
+        { x: 160, y: 190, segment1: 7, segment2: 1 }
       ]
     });
 

@@ -209,8 +209,8 @@ function findDotsAtSegment(p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y, t) {
       alpha = (90 - math.atan2(mx - nx, my - ny) * 180 / PI);
 
   return {
-    x: x,
-    y: y,
+    x: fixError(x),
+    y: fixError(y),
     m: { x: mx, y: my },
     n: { x: nx, y: ny },
     start: { x: ax, y: ay },
@@ -307,8 +307,8 @@ function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4) {
     return;
   }
 
-  var px = nx / denominator,
-      py = ny / denominator,
+  var px = fixError(nx / denominator),
+      py = fixError(ny / denominator),
       px2 = +px.toFixed(2),
       py2 = +py.toFixed(2);
 
@@ -326,6 +326,10 @@ function intersectLines(x1, y1, x2, y2, x3, y3, x4, y4) {
   }
 
   return { x: px, y: py };
+}
+
+function fixError(number) {
+  return Math.round(number * 100000000000) / 100000000000;
 }
 
 function findBezierIntersections(bez1, bez2, justCount) {
