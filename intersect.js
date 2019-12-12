@@ -8,8 +8,7 @@
 
 /* eslint no-fallthrough: "off" */
 
-var has = 'hasOwnProperty',
-    p2s = /,?([a-z]),?/gi,
+var p2s = /,?([a-z]),?/gi,
     toFloat = parseFloat,
     math = Math,
     PI = math.PI,
@@ -19,6 +18,10 @@ var has = 'hasOwnProperty',
     abs = math.abs,
     pathCommand = /([a-z])[\s,]*((-?\d*\.?\d*(?:e[-+]?\d+)?[\s]*,?[\s]*)+)/ig,
     pathValues = /(-?\d*\.?\d*(?:e[-+]?\\d+)?)[\s]*,?[\s]*/ig;
+
+function hasProperty(obj, property) {
+  return Object.prototype.hasOwnProperty.call(obj, property);
+}
 
 function is(o, type) {
   type = String.prototype.toLowerCase.call(type);
@@ -45,8 +48,10 @@ function clone(obj) {
 
   var res = new obj.constructor;
 
-  for (var key in obj) if (obj[has](key)) {
-    res[key] = clone(obj[key]);
+  for (var key in obj) {
+    if (hasProperty(obj, key)) {
+      res[key] = clone(obj[key]);
+    }
   }
 
   return res;
@@ -67,7 +72,7 @@ function cacher(f, scope, postprocessor) {
         cache = newf.cache = newf.cache || {},
         count = newf.count = newf.count || [];
 
-    if (cache[has](args)) {
+    if (hasProperty(cache, args)) {
       repush(count, args);
       return postprocessor ? postprocessor(cache[args]) : cache[args];
     }
@@ -143,9 +148,11 @@ function paths(ps) {
   }
 
   setTimeout(function() {
-    for (var key in p) if (p[has](key) && key != ps) {
-      p[key].sleep--;
-      !p[key].sleep && delete p[key];
+    for (var key in p) {
+      if (hasProperty(p, key) && key != ps) {
+        p[key].sleep--;
+        !p[key].sleep && delete p[key];
+      }
     }
   });
 
