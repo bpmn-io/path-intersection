@@ -354,15 +354,17 @@ function findBezierIntersections(bez1, bez2, justCount) {
           dj1 = dots2[j + 1],
           ci = abs(di1.x - di.x) < .01 ? 'y' : 'x',
           cj = abs(dj1.x - dj.x) < .01 ? 'y' : 'x',
-          is = intersectLines(di.x, di.y, di1.x, di1.y, dj.x, dj.y, dj1.x, dj1.y);
+          is = intersectLines(di.x, di.y, di1.x, di1.y, dj.x, dj.y, dj1.x, dj1.y),
+          key;
 
       if (is) {
+        key = is.x.toFixed(9) + '#' + is.y.toFixed(9);
 
-        if (xy[is.x.toFixed(0)] == is.y.toFixed(0)) {
+        if (xy[key]) {
           continue;
         }
 
-        xy[is.x.toFixed(0)] = is.y.toFixed(0);
+        xy[key] = true;
 
         var t1 = di.t + abs((is[ci] - di[ci]) / (di1[ci] - di[ci])) * (di1.t - di.t),
             t2 = dj.t + abs((is[cj] - dj[cj]) / (dj1[cj] - dj[cj])) * (dj1.t - dj.t);
