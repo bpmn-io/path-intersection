@@ -153,11 +153,8 @@ function paths(ps) {
 }
 
 function box(x, y, width, height) {
-  if (x == null) {
-    x = y = width = height = 0;
-  }
 
-  if (y == null) {
+  if (arguments.length === 1) {
     y = x.y;
     width = x.width;
     height = x.height;
@@ -222,19 +219,15 @@ function findDotsAtSegment(p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y, t) {
   };
 }
 
-function bezierBBox(p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y) {
+function bezierBBox(points) {
 
-  if (!is(p1x, 'array')) {
-    p1x = [p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y];
-  }
-
-  var bbox = curveBBox.apply(null, p1x);
+  var bbox = curveBBox.apply(null, points);
 
   return box(
-    bbox.min.x,
-    bbox.min.y,
-    bbox.max.x - bbox.min.x,
-    bbox.max.y - bbox.min.y
+    bbox.x0,
+    bbox.y0,
+    bbox.x1 - bbox.x0,
+    bbox.y1 - bbox.y0
   );
 }
 
@@ -821,12 +814,15 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   bounds[0].length = bounds[1].length = jlen + 2;
 
   return {
-    min: { x: mmin.apply(0, bounds[0]), y: mmin.apply(0, bounds[1]) },
-    max: { x: mmax.apply(0, bounds[0]), y: mmax.apply(0, bounds[1]) }
+    x0: mmin.apply(0, bounds[0]),
+    y0: mmin.apply(0, bounds[1]),
+    x1: mmax.apply(0, bounds[0]),
+    y1: mmax.apply(0, bounds[1])
   };
 }
 
 function pathToCurve(path) {
+
   var pth = paths(path);
 
   // return cached curve, if existing
@@ -834,7 +830,7 @@ function pathToCurve(path) {
     return pathClone(pth.curve);
   }
 
-  var p = pathToAbsolute(path),
+  var curvedPath = pathToAbsolute(path),
       attrs = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
       processPath = function(path, d, pathCommand) {
         var nx, ny;
@@ -917,7 +913,7 @@ function pathToCurve(path) {
           }
 
           pp.splice(i, 1);
-          ii = p.length;
+          ii = curvedPath.length;
         }
       },
 
@@ -925,23 +921,23 @@ function pathToCurve(path) {
       pfirst = '', // temporary holder for original path command
       pathCommand = ''; // holder for previous path command of original path
 
-  for (var i = 0, ii = p.length; i < ii; i++) {
-    p[i] && (pfirst = p[i][0]); // save current path command
+  for (var i = 0, ii = curvedPath.length; i < ii; i++) {
+    curvedPath[i] && (pfirst = curvedPath[i][0]); // save current path command
 
     if (pfirst != 'C') // C is not saved yet, because it may be result of conversion
     {
       pathCommands[i] = pfirst; // Save current path command
       i && (pathCommand = pathCommands[i - 1]); // Get previous path command pathCommand
     }
-    p[i] = processPath(p[i], attrs, pathCommand); // Previous path command is inputted to processPath
+    curvedPath[i] = processPath(curvedPath[i], attrs, pathCommand); // Previous path command is inputted to processPath
 
     if (pathCommands[i] != 'A' && pfirst == 'C') pathCommands[i] = 'C'; // A is the only command
     // which may produce multiple C:s
     // so we have to make sure that C is also C in original path
 
-    fixArc(p, i); // fixArc adds also the right amount of A:s to pathCommands
+    fixArc(curvedPath, i); // fixArc adds also the right amount of A:s to pathCommands
 
-    var seg = p[i],
+    var seg = curvedPath[i],
         seglen = seg.length;
 
     attrs.x = seg[seglen - 2];
@@ -951,9 +947,9 @@ function pathToCurve(path) {
   }
 
   // cache curve
-  pth.curve = pathClone(p);
+  pth.curve = pathClone(curvedPath);
 
-  return p;
+  return curvedPath;
 }
 
 module.exports = findPathIntersections;
