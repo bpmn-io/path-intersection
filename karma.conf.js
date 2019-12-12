@@ -26,7 +26,6 @@ module.exports = function(karma) {
   karma.set({
 
     frameworks: [
-      'browserify',
       'mocha',
       'sinon-chai'
     ],
@@ -36,7 +35,7 @@ module.exports = function(karma) {
     ],
 
     preprocessors: {
-      'test/**/*.spec.js': [ 'browserify' ]
+      'test/intersect.spec.js': [ 'webpack' ]
     },
 
     reporters: [ 'spec' ],
@@ -57,9 +56,9 @@ module.exports = function(karma) {
     autoWatch: false,
     singleRun: true,
 
-    // browserify configuration
-    browserify: {
-      debug: true
+    webpack: {
+      mode: 'development',
+      devtool: 'eval-source-map'
     }
   });
 };
