@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * This file contains portions that got extraced from Snap.svg (licensed Apache-2.0).
+ * This file contains source code adapted from Snap.svg (licensed Apache-2.0).
  *
  * @see https://github.com/adobe-webplatform/Snap.svg/blob/master/src/path.js
  */
