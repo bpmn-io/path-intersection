@@ -187,6 +187,16 @@ describe('path-intersection', function() {
       ]
     });
 
+
+    test('two lines, close proximity', {
+      p0: 'M10,10 h8 v-5 h-5 v3',
+      p1: 'M15,14 v-7 h6',
+      expectedIntersections: [
+        { x: 15, y: 10, segment1: 1, segment2: 1 },
+        { x: 18, y: 7, segment1: 2, segment2: 2 }
+      ]
+    });
+
   });
 
 

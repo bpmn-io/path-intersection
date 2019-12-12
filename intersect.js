@@ -328,8 +328,8 @@ function findBezierIntersections(bez1, bez2, justCount) {
 
   var l1 = bezlen.apply(0, bez1),
       l2 = bezlen.apply(0, bez2),
-      n1 = ~~(l1 / 5),
-      n2 = ~~(l2 / 5),
+      n1 = ~~(l1 / 5) || 1,
+      n2 = ~~(l2 / 5) || 1,
       dots1 = [],
       dots2 = [],
       xy = {},
