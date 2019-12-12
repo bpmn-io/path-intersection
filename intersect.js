@@ -829,6 +829,7 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
 function pathToCurve(path) {
   var pth = paths(path);
 
+  // return cached curve, if existing
   if (pth.curve) {
     return pathClone(pth.curve);
   }
@@ -949,6 +950,7 @@ function pathToCurve(path) {
     attrs.by = toFloat(seg[seglen - 3]) || attrs.y;
   }
 
+  // cache curve
   pth.curve = pathClone(p);
 
   return p;
