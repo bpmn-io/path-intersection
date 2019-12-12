@@ -835,7 +835,7 @@ function pathToCurve(path) {
 
   var p = pathToAbsolute(path),
       attrs = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
-      processPath = function(path, d, pcom) {
+      processPath = function(path, d, pathCommand) {
         var nx, ny;
 
         if (!path) {
@@ -853,7 +853,7 @@ function pathToCurve(path) {
           path = ['C'].concat(arcToCurve.apply(0, [d.x, d.y].concat(path.slice(1))));
           break;
         case 'S':
-          if (pcom == 'C' || pcom == 'S') {
+          if (pathCommand == 'C' || pathCommand == 'S') {
             // In 'S' case we have to take into account, if the previous command is C/S.
             nx = d.x * 2 - d.bx;
             // And reflect the previous
@@ -868,7 +868,7 @@ function pathToCurve(path) {
           path = ['C', nx, ny].concat(path.slice(1));
           break;
         case 'T':
-          if (pcom == 'Q' || pcom == 'T') {
+          if (pathCommand == 'Q' || pathCommand == 'T') {
             // In 'T' case we have to take into account, if the previous command is Q/T.
             d.qx = d.x * 2 - d.qx;
             // And make a reflection similar
@@ -922,7 +922,7 @@ function pathToCurve(path) {
 
       pathCommands = [], // path commands of original path p
       pfirst = '', // temporary holder for original path command
-      pcom = ''; // holder for previous path command of original path
+      pathCommand = ''; // holder for previous path command of original path
 
   for (var i = 0, ii = mmax(p.length, 0); i < ii; i++) {
     p[i] && (pfirst = p[i][0]); // save current path command
@@ -930,9 +930,9 @@ function pathToCurve(path) {
     if (pfirst != 'C') // C is not saved yet, because it may be result of conversion
     {
       pathCommands[i] = pfirst; // Save current path command
-      i && (pcom = pathCommands[i - 1]); // Get previous path command pcom
+      i && (pathCommand = pathCommands[i - 1]); // Get previous path command pathCommand
     }
-    p[i] = processPath(p[i], attrs, pcom); // Previous path command is inputted to processPath
+    p[i] = processPath(p[i], attrs, pathCommand); // Previous path command is inputted to processPath
 
     if (pathCommands[i] != 'A' && pfirst == 'C') pathCommands[i] = 'C'; // A is the only command
     // which may produce multiple C:s
