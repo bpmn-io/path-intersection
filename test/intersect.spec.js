@@ -295,7 +295,10 @@ function debug(label, pathArray, intersectionsArray, fail) {
     }
 
     return i.map(function(p) {
-      return '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="none" stroke="red" stroke-width="1" />';
+      return (
+        '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="none" stroke="red" stroke-width="1" />' +
+        '<circle cx="' + p.x + '" cy="' + p.y + '" r=".5" fill="red" stroke="none" stroke-width="1" />'
+      );
     }).join('');
   });
 
