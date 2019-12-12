@@ -826,17 +826,15 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   };
 }
 
-function pathToCurve(path, path2) {
-  var pth = !path2 && paths(path);
+function pathToCurve(path) {
+  var pth = paths(path);
 
-  if (!path2 && pth.curve) {
+  if (pth.curve) {
     return pathClone(pth.curve);
   }
 
   var p = pathToAbsolute(path),
-      p2 = path2 && pathToAbsolute(path2),
       attrs = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
-      attrs2 = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
       processPath = function(path, d, pcom) {
         var nx, ny;
 
@@ -913,89 +911,47 @@ function pathToCurve(path, path2) {
           var pi = pp[i];
 
           while (pi.length) {
-            pcoms1[i] = 'A'; // if created multiple C:s, their original seg is saved
-            p2 && (pcoms2[i] = 'A'); // the same as above
+            pathCommands[i] = 'A'; // if created multiple C:s, their original seg is saved
             pp.splice(i++, 0, ['C'].concat(pi.splice(0, 6)));
           }
 
           pp.splice(i, 1);
-          ii = mmax(p.length, p2 && p2.length || 0);
+          ii = mmax(p.length, 0);
         }
       },
 
-      fixM = function(path1, path2, a1, a2, i) {
-
-        if (path1 && path2 && path1[i][0] == 'M' && path2[i][0] != 'M') {
-          path2.splice(i, 0, ['M', a2.x, a2.y]);
-          a1.bx = 0;
-          a1.by = 0;
-          a1.x = path1[i][1];
-          a1.y = path1[i][2];
-          ii = mmax(p.length, p2 && p2.length || 0);
-        }
-      },
-
-      pcoms1 = [], // path commands of original path p
-      pcoms2 = [], // path commands of original path p2
+      pathCommands = [], // path commands of original path p
       pfirst = '', // temporary holder for original path command
       pcom = ''; // holder for previous path command of original path
 
-  for (var i = 0, ii = mmax(p.length, p2 && p2.length || 0); i < ii; i++) {
+  for (var i = 0, ii = mmax(p.length, 0); i < ii; i++) {
     p[i] && (pfirst = p[i][0]); // save current path command
 
     if (pfirst != 'C') // C is not saved yet, because it may be result of conversion
     {
-      pcoms1[i] = pfirst; // Save current path command
-      i && (pcom = pcoms1[i - 1]); // Get previous path command pcom
+      pathCommands[i] = pfirst; // Save current path command
+      i && (pcom = pathCommands[i - 1]); // Get previous path command pcom
     }
     p[i] = processPath(p[i], attrs, pcom); // Previous path command is inputted to processPath
 
-    if (pcoms1[i] != 'A' && pfirst == 'C') pcoms1[i] = 'C'; // A is the only command
+    if (pathCommands[i] != 'A' && pfirst == 'C') pathCommands[i] = 'C'; // A is the only command
     // which may produce multiple C:s
     // so we have to make sure that C is also C in original path
 
-    fixArc(p, i); // fixArc adds also the right amount of A:s to pcoms1
-
-    if (p2) { // the same procedures is done to p2
-      p2[i] && (pfirst = p2[i][0]);
-
-      if (pfirst != 'C') {
-        pcoms2[i] = pfirst;
-        i && (pcom = pcoms2[i - 1]);
-      }
-
-      p2[i] = processPath(p2[i], attrs2, pcom);
-
-      if (pcoms2[i] != 'A' && pfirst == 'C') {
-        pcoms2[i] = 'C';
-      }
-
-      fixArc(p2, i);
-    }
-
-    fixM(p, p2, attrs, attrs2, i);
-    fixM(p2, p, attrs2, attrs, i);
+    fixArc(p, i); // fixArc adds also the right amount of A:s to pathCommands
 
     var seg = p[i],
-        seg2 = p2 && p2[i],
-        seglen = seg.length,
-        seg2len = p2 && seg2.length;
+        seglen = seg.length;
 
     attrs.x = seg[seglen - 2];
     attrs.y = seg[seglen - 1];
     attrs.bx = toFloat(seg[seglen - 4]) || attrs.x;
     attrs.by = toFloat(seg[seglen - 3]) || attrs.y;
-    attrs2.bx = p2 && (toFloat(seg2[seg2len - 4]) || attrs2.x);
-    attrs2.by = p2 && (toFloat(seg2[seg2len - 3]) || attrs2.y);
-    attrs2.x = p2 && seg2[seg2len - 2];
-    attrs2.y = p2 && seg2[seg2len - 1];
   }
 
-  if (!p2) {
-    pth.curve = pathClone(p);
-  }
+  pth.curve = pathClone(p);
 
-  return p2 ? [p, p2] : p;
+  return p;
 }
 
 module.exports = findPathIntersections;
