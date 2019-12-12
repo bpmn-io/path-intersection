@@ -6,6 +6,10 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 2.0.0
+
+* `CHORE`: remove intersection logic for non-standardized path descriptors ([`d6f07947`](https://github.com/bpmn-io/path-intersection/commit/d6f079474baf091914ee261efd98a88c4bf1990d))
+
 ## 1.1.1
 
 * `FIX`: correct TypeScript definitions to match export
