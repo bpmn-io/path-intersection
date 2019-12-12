@@ -916,7 +916,7 @@ function pathToCurve(path) {
           }
 
           pp.splice(i, 1);
-          ii = mmax(p.length, 0);
+          ii = p.length;
         }
       },
 
@@ -924,7 +924,7 @@ function pathToCurve(path) {
       pfirst = '', // temporary holder for original path command
       pathCommand = ''; // holder for previous path command of original path
 
-  for (var i = 0, ii = mmax(p.length, 0); i < ii; i++) {
+  for (var i = 0, ii = p.length; i < ii; i++) {
     p[i] && (pfirst = p[i][0]); // save current path command
 
     if (pfirst != 'C') // C is not saved yet, because it may be result of conversion
