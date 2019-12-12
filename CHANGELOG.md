@@ -6,6 +6,13 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 2.0.1
+
+* `FIX`: handle path segments with length smaller than five pixel ([`f733e90f`](https://github.com/bpmn-io/path-intersection/commit/f733e90f5fd5251ca103f82d48cf84f5cf4d3ffc))
+* `FIX`: compensate rounding error ([`6433915d`](https://github.com/bpmn-io/path-intersection/commit/6433915d11d6ddab3942c240fe6adf090bc3ca06))
+* `CHORE`: slightly increase duplicate filtering accuracy ([`f37c0567`](https://github.com/bpmn-io/path-intersection/commit/f37c05672a9cfd413b032c4f9dd5a8e54a780541))
+* `CHORE`: various code cleanups
+
 ## 2.0.0
 
 * `CHORE`: remove intersection logic for non-standardized path descriptors ([`d6f07947`](https://github.com/bpmn-io/path-intersection/commit/d6f079474baf091914ee261efd98a88c4bf1990d))
