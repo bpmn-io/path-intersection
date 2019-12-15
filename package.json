@@ -1,6 +1,6 @@
 {
   "name": "path-intersection",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "Computes the intersection between two SVG paths",
   "main": "intersect.js",
   "types": "intersect.d.ts",
