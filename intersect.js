@@ -48,7 +48,7 @@ function repush(array, item) {
   }
 }
 
-function cacher(f, scope, postprocessor) {
+function cacher(f) {
 
   function newf() {
 
@@ -59,14 +59,14 @@ function cacher(f, scope, postprocessor) {
 
     if (hasProperty(cache, args)) {
       repush(count, args);
-      return postprocessor ? postprocessor(cache[args]) : cache[args];
+      return cache[args];
     }
 
     count.length >= 1e3 && delete cache[count.shift()];
     count.push(args);
-    cache[args] = f.apply(scope, arg);
+    cache[args] = f.apply(0, arg);
 
-    return postprocessor ? postprocessor(cache[args]) : cache[args];
+    return cache[args];
   }
   return newf;
 }
