@@ -19,25 +19,10 @@ var p2s = /,?([a-z]),?/gi,
     pathCommand = /([a-z])[\s,]*((-?\d*\.?\d*(?:e[-+]?\d+)?[\s]*,?[\s]*)+)/ig,
     pathValues = /(-?\d*\.?\d*(?:e[-+]?\\d+)?)[\s]*,?[\s]*/ig;
 
+var isArray = Array.isArray || function(o) { return o instanceof Array; };
+
 function hasProperty(obj, property) {
   return Object.prototype.hasOwnProperty.call(obj, property);
-}
-
-function is(o, type) {
-  type = String.prototype.toLowerCase.call(type);
-
-  if (type == 'finite') {
-    return isFinite(o);
-  }
-
-  if (type == 'array' && (o instanceof Array || Array.isArray && Array.isArray(o))) {
-    return true;
-  }
-
-  return (type == 'null' && o === null) ||
-         (type == typeof o && o !== null) ||
-         (type == 'object' && o === Object(o)) ||
-         Object.prototype.toString.call(o).slice(8, -1).toLowerCase() == type;
 }
 
 function clone(obj) {
@@ -101,7 +86,7 @@ function parsePathString(pathString) {
   var paramCounts = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
       data = [];
 
-  if (is(pathString, 'array') && is(pathString[0], 'array')) { // rough assumption
+  if (isArray(pathString) && isArray(pathString[0])) { // rough assumption
     data = clone(pathString);
   }
 
@@ -492,7 +477,7 @@ function pathToAbsolute(pathArray) {
     return pathClone(pth.abs);
   }
 
-  if (!is(pathArray, 'array') || !is(pathArray && pathArray[0], 'array')) { // rough assumption
+  if (!isArray(pathArray) || !isArray(pathArray && pathArray[0])) { // rough assumption
     pathArray = parsePathString(pathArray);
   }
 
