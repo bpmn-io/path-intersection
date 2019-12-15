@@ -159,7 +159,7 @@ function paths(ps) {
   return p[ps];
 }
 
-function box(x, y, width, height) {
+function rectBBox(x, y, width, height) {
 
   if (arguments.length === 1) {
     y = x.y;
@@ -172,18 +172,9 @@ function box(x, y, width, height) {
     x: x,
     y: y,
     width: width,
-    w: width,
     height: height,
-    h: height,
     x2: x + width,
-    y2: y + height,
-    cx: x + width / 2,
-    cy: y + height / 2,
-    r1: math.min(width, height) / 2,
-    r2: math.max(width, height) / 2,
-    r0: math.sqrt(width * width + height * height) / 2,
-    path: rectPath(x, y, width, height),
-    vb: [x, y, width, height].join(' ')
+    y2: y + height
   };
 }
 
@@ -216,7 +207,7 @@ function bezierBBox(points) {
 
   var bbox = curveBBox.apply(null, points);
 
-  return box(
+  return rectBBox(
     bbox.x0,
     bbox.y0,
     bbox.x1 - bbox.x0,
@@ -232,8 +223,8 @@ function isPointInsideBBox(bbox, x, y) {
 }
 
 function isBBoxIntersect(bbox1, bbox2) {
-  bbox1 = box(bbox1);
-  bbox2 = box(bbox2);
+  bbox1 = rectBBox(bbox1);
+  bbox2 = rectBBox(bbox2);
   return isPointInsideBBox(bbox2, bbox1.x, bbox1.y)
     || isPointInsideBBox(bbox2, bbox1.x2, bbox1.y)
     || isPointInsideBBox(bbox2, bbox1.x, bbox1.y2)
@@ -493,28 +484,6 @@ function findPathIntersections(path1, path2, justCount) {
   return res;
 }
 
-
-function rectPath(x, y, w, h, r) {
-  if (r) {
-    return [
-      ['M', +x + (+r), y],
-      ['l', w - r * 2, 0],
-      ['a', r, r, 0, 0, 1, r, r],
-      ['l', 0, h - r * 2],
-      ['a', r, r, 0, 0, 1, -r, r],
-      ['l', r * 2 - w, 0],
-      ['a', r, r, 0, 0, 1, -r, -r],
-      ['l', 0, r * 2 - h],
-      ['a', r, r, 0, 0, 1, r, -r],
-      ['z']
-    ];
-  }
-
-  var res = [['M', x, y], ['l', w, 0], ['l', 0, h], ['l', -w, 0], ['z']];
-  res.toString = pathToString;
-
-  return res;
-}
 
 function pathToAbsolute(pathArray) {
   var pth = paths(pathArray);
