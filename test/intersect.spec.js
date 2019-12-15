@@ -197,6 +197,36 @@ describe('path-intersection', function() {
       ]
     });
 
+
+    test('two short lines, shared origin', {
+      p0: 'M0,0 h8 v-5 h-5 v3',
+      p1: 'M0,0 v-7 h6',
+      expectedIntersections: [
+        { x: -0, y: -0, segment1: 1, segment2: 1 }
+      ]
+    });
+
+
+    test('two segments on same line, starting at same position', {
+      p0: 'M0,0 h50',
+      p1: 'M0,0 h-50',
+      expectedIntersections: []
+    });
+
+
+    test('two segments on same line, ending at same position', {
+      p0: 'M50,0 h-25',
+      p1: 'M0,0 h25',
+      expectedIntersections: []
+    });
+
+
+    test('two segments on same line, overlapping', {
+      p0: 'M0,0 h30',
+      p1: 'M0,0 h50',
+      expectedIntersections: []
+    });
+
   });
 
 
