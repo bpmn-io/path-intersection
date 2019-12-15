@@ -6,6 +6,10 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 2.0.2
+
+* `FIX`: safely clone things
+
 ## 2.0.1
 
 * `FIX`: handle path segments with length smaller than five pixel ([`f733e90f`](https://github.com/bpmn-io/path-intersection/commit/f733e90f5fd5251ca103f82d48cf84f5cf4d3ffc))
