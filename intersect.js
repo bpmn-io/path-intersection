@@ -410,7 +410,7 @@ function findBezierIntersections(bez1, bez2, justCount) {
  *
  * // intersections = [
  * //   { x: 50, y: 50, segment1: 1, segment2: 1, t1: 0.5, t2: 0.5 }
- * //
+ * // ]
  *
  * @param {String|Array<PathDef>} path1
  * @param {String|Array<PathDef>} path2
