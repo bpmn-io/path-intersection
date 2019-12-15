@@ -295,8 +295,15 @@ function expectIntersection(intersections, expected) {
 
 function debug(label, pathArray, intersectionsArray, fail) {
 
-  var paths = pathArray.map(function(path) {
-    return '<path d="' + path + '" fill="none" stroke="#000" stroke-width="1" />';
+  var colors = [
+    '#000',
+    '#AAA',
+    '#777',
+    '#333'
+  ];
+
+  var paths = pathArray.map(function(path, idx) {
+    return '<path d="' + path + '" fill="none" stroke="' + colors[idx] + '" stroke-width="1" />';
   }).join('');
 
   var points = intersectionsArray.map(function(i) {
