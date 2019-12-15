@@ -7,7 +7,7 @@ Computes the intersection between two SVG paths.
 
 ## Examples
 
-![Intersection examples](./resources/examples.png)
+<img width="600" src="https://raw.githubusercontent.com/bpmn-io/path-intersection/master/resources/examples.png" alt="Intersection examples" />
 
 Execute `npm run dev` and navigate to [`http://localhost:9876/debug.html`](http://localhost:9876/debug.html) to see more examples.
 
