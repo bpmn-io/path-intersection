@@ -62,7 +62,7 @@ function cacher(f) {
 
     count.length >= 1e3 && delete cache[count.shift()];
     count.push(args);
-    cache[args] = f.apply(0, arg);
+    cache[args] = f(...arguments);
 
     return cache[args];
   }
@@ -99,13 +99,13 @@ function parsePathString(pathString) {
       });
 
       if (name == 'm' && params.length > 2) {
-        data.push([ b ].concat(params.splice(0, 2)));
+        data.push([ b, ...params.splice(0, 2) ]);
         name = 'l';
         b = b == 'm' ? 'l' : 'L';
       }
 
       while (params.length >= paramCounts[name]) {
-        data.push([ b ].concat(params.splice(0, paramCounts[name])));
+        data.push([ b, ...params.splice(0, paramCounts[name]) ]);
         if (!paramCounts[name]) {
           break;
         }
@@ -188,7 +188,7 @@ function findDotsAtSegment(p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y, t) {
 
 function bezierBBox(points) {
 
-  var bbox = curveBBox.apply(null, points);
+  var bbox = curveBBox(...points);
 
   return rectBBox(
     bbox.x0,
@@ -309,8 +309,8 @@ function findBezierIntersections(bez1, bez2, justCount) {
 
   // As an optimization, lines will have only 1 segment
 
-  var l1 = bezlen.apply(0, bez1),
-      l2 = bezlen.apply(0, bez2),
+  var l1 = bezlen(...bez1),
+      l2 = bezlen(...bez2),
       n1 = isLine(bez1) ? 1 : ~~(l1 / 5) || 1,
       n2 = isLine(bez2) ? 1 : ~~(l2 / 5) || 1,
       dots1 = [],
@@ -319,12 +319,12 @@ function findBezierIntersections(bez1, bez2, justCount) {
       res = justCount ? 0 : [];
 
   for (var i = 0; i < n1 + 1; i++) {
-    var p = findDotsAtSegment.apply(0, bez1.concat(i / n1));
+    var p = findDotsAtSegment(...bez1, i / n1);
     dots1.push({ x: p.x, y: p.y, t: i / n1 });
   }
 
   for (i = 0; i < n2 + 1; i++) {
-    p = findDotsAtSegment.apply(0, bez2.concat(i / n2));
+    p = findDotsAtSegment(...bez2, i / n2);
     dots2.push({ x: p.x, y: p.y, t: i / n2 });
   }
 
@@ -419,7 +419,7 @@ export default function findPathIntersections(path1, path2, justCount) {
     } else {
 
       if (pi[0] == 'C') {
-        bez1 = [ x1, y1 ].concat(pi.slice(1));
+        bez1 = [ x1, y1, ...pi.slice(1) ];
         x1 = bez1[6];
         y1 = bez1[7];
       } else {
@@ -437,7 +437,7 @@ export default function findPathIntersections(path1, path2, justCount) {
         } else {
 
           if (pj[0] == 'C') {
-            bez2 = [ x2, y2 ].concat(pj.slice(1));
+            bez2 = [ x2, y2, ...pj.slice(1) ];
             x2 = bez2[6];
             y2 = bez2[7];
           } else {
@@ -776,10 +776,10 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   bounds[0].length = bounds[1].length = jlen + 2;
 
   return {
-    x0: mmin.apply(0, bounds[0]),
-    y0: mmin.apply(0, bounds[1]),
-    x1: mmax.apply(0, bounds[0]),
-    y1: mmax.apply(0, bounds[1])
+    x0: mmin(...bounds[0]),
+    y0: mmin(...bounds[1]),
+    x1: mmax(...bounds[0]),
+    y1: mmax(...bounds[1])
   };
 }
 
@@ -809,7 +809,7 @@ function pathToCurve(path) {
           d.Y = path[2];
           break;
         case 'A':
-          path = [ 'C' ].concat(arcToCurve.apply(0, [ d.x, d.y ].concat(path.slice(1))));
+          path = [ 'C', ...arcToCurve(d.x, d.y, ...path.slice(1)) ];
           break;
         case 'S':
           if (pathCommand == 'C' || pathCommand == 'S') {
@@ -828,7 +828,7 @@ function pathToCurve(path) {
             nx = d.x;
             ny = d.y;
           }
-          path = [ 'C', nx, ny ].concat(path.slice(1));
+          path = [ 'C', nx, ny, ...path.slice(1) ];
           break;
         case 'T':
           if (pathCommand == 'Q' || pathCommand == 'T') {
@@ -847,24 +847,24 @@ function pathToCurve(path) {
             d.qx = d.x;
             d.qy = d.y;
           }
-          path = [ 'C' ].concat(qubicToCurve(d.x, d.y, d.qx, d.qy, path[1], path[2]));
+          path = [ 'C', ...qubicToCurve(d.x, d.y, d.qx, d.qy, path[1], path[2]) ];
           break;
         case 'Q':
           d.qx = path[1];
           d.qy = path[2];
-          path = [ 'C' ].concat(qubicToCurve(d.x, d.y, path[1], path[2], path[3], path[4]));
+          path = [ 'C', ...qubicToCurve(d.x, d.y, path[1], path[2], path[3], path[4]) ];
           break;
         case 'L':
-          path = [ 'C' ].concat(lineToCurve(d.x, d.y, path[1], path[2]));
+          path = [ 'C', ...lineToCurve(d.x, d.y, path[1], path[2]) ];
           break;
         case 'H':
-          path = [ 'C' ].concat(lineToCurve(d.x, d.y, path[1], d.y));
+          path = [ 'C', ...lineToCurve(d.x, d.y, path[1], d.y) ];
           break;
         case 'V':
-          path = [ 'C' ].concat(lineToCurve(d.x, d.y, d.x, path[1]));
+          path = [ 'C', ...lineToCurve(d.x, d.y, d.x, path[1]) ];
           break;
         case 'Z':
-          path = [ 'C' ].concat(lineToCurve(d.x, d.y, d.X, d.Y));
+          path = [ 'C', ...lineToCurve(d.x, d.y, d.X, d.Y) ];
           break;
         }
 
@@ -879,7 +879,7 @@ function pathToCurve(path) {
 
           while (pi.length) {
             pathCommands[i] = 'A'; // if created multiple C:s, their original seg is saved
-            pp.splice(i++, 0, [ 'C' ].concat(pi.splice(0, 6)));
+            pp.splice(i++, 0, [ 'C', ...pi.splice(0, 6) ]);
           }
 
           pp.splice(i, 1);
