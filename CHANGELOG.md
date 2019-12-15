@@ -6,6 +6,10 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 2.1.0
+
+* `CHORE`: various code cleanups
+
 ## 2.0.2
 
 * `FIX`: safely clone things
