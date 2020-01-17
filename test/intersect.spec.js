@@ -227,6 +227,15 @@ describe('path-intersection', function() {
       expectedIntersections: []
     });
 
+
+    test('two diagonal lines', {
+      p0: 'M0,0 L100,100',
+      p1: 'M100,0 L0,100',
+      expectedIntersections: [
+        { x: 50, y: 50, segment1: 1, segment2: 1 }
+      ]
+    });
+
   });
 
 

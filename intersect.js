@@ -309,15 +309,12 @@ function findBezierIntersections(bez1, bez2, justCount) {
     return justCount ? 0 : [];
   }
 
-  // for straight lines without tangents, either the width
-  // or the height of the bounding box equals to 0.
-  var isBez1Line = (bbox1.width === 0) || (bbox1.height === 0);
-  var isBez2Line = (bbox2.width === 0) || (bbox2.height === 0);
+  // As an optimization, lines will have only 1 segment
 
   var l1 = bezlen.apply(0, bez1),
       l2 = bezlen.apply(0, bez2),
-      n1 = isBez1Line ? 1 : ~~(l1 / 5) || 1, // lines will have only 1 segment
-      n2 = isBez2Line ? 1 : ~~(l2 / 5) || 1,
+      n1 = isLine(bez1) ? 1 : ~~(l1 / 5) || 1,
+      n2 = isLine(bez2) ? 1 : ~~(l2 / 5) || 1,
       dots1 = [],
       dots2 = [],
       xy = {},
@@ -570,6 +567,15 @@ function pathToAbsolute(pathArray) {
   pth.abs = pathClone(res);
 
   return res;
+}
+
+function isLine(bez) {
+  return (
+    bez[0] === bez[2] &&
+    bez[1] === bez[3] &&
+    bez[4] === bez[6] &&
+    bez[5] === bez[7]
+  );
 }
 
 function lineToCurve(x1, y1, x2, y2) {
