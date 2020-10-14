@@ -1,6 +1,6 @@
 # path-intersection
 
-[![Build Status](https://travis-ci.org/bpmn-io/path-intersection.svg?branch=master)](https://travis-ci.org/bpmn-io/path-intersection)
+[![Build Status](https://travis-ci.com/bpmn-io/path-intersection.svg?branch=master)](https://travis-ci.com/bpmn-io/path-intersection)
 
 Computes the intersection between two SVG paths.
 
