@@ -17,7 +17,7 @@ var p2s = /,?([a-z]),?/gi,
     pow = math.pow,
     abs = math.abs,
     pathCommand = /([a-z])[\s,]*((-?\d*\.?\d*(?:e[-+]?\d+)?[\s]*,?[\s]*)+)/ig,
-    pathValues = /(-?\d*\.?\d*(?:e[-+]?\\d+)?)[\s]*,?[\s]*/ig;
+    pathValues = /(-?\d*\.?\d*(?:e[-+]?\d+)?)[\s]*,?[\s]*/ig;
 
 var isArray = Array.isArray || function(o) { return o instanceof Array; };
 
