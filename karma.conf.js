@@ -25,8 +25,6 @@ module.exports = function(karma) {
       'test/intersect.spec.js': [ 'webpack' ]
     },
 
-    reporters: [ 'spec' ],
-
     browsers: browsers,
 
     autoWatch: false,
