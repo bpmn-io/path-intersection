@@ -1,5 +1,5 @@
+.github
 test/
 resources/
 .eslintrc
-.travis.yml
 karma.conf.js
