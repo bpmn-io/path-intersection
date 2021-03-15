@@ -1,7 +1,5 @@
 'use strict';
 
-/* global process */
-
 // configures browsers to run test against
 // any of [ 'ChromeHeadless', 'Chrome', 'Firefox', 'IE', 'PhantomJS' ]
 var browsers = (process.env.TEST_BROWSERS || 'ChromeHeadless').split(',');
