@@ -236,6 +236,15 @@ describe('path-intersection', function() {
       ]
     });
 
+
+    test('points with scientific notation', {
+      p0: 'M1.12345e-15,1.12345e-15 L100,100',
+      p1: 'M100,0 L0,100',
+      expectedIntersections: [
+        { x: 50, y: 50, segment1: 1, segment2: 1 }
+      ]
+    });
+
   });
 
 
