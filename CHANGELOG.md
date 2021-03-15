@@ -6,6 +6,10 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 2.2.1
+
+* `FIX`: correct parsing of paths with scientific notation ([#17](https://github.com/bpmn-io/path-intersection/issues/17), [#18](https://github.com/bpmn-io/path-intersection/issues/18), [#19](https://github.com/bpmn-io/path-intersection/issues/19))
+
 ## 2.2.0
 
 * `FEAT`: optimize intersection finding for vertical or horizontal lines ([#9](https://github.com/bpmn-io/path-intersection/issues/9))
