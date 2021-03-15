@@ -27,8 +27,8 @@
   "devDependencies": {
     "chai": "^4.3.4",
     "domify": "^1.4.0",
-    "eslint": "^4.19.1",
-    "eslint-plugin-bpmn-io": "^0.5.2",
+    "eslint": "^7.22.0",
+    "eslint-plugin-bpmn-io": "^0.12.0",
     "karma": "^6.2.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-firefox-launcher": "^2.1.0",

@@ -1,3 +1,6 @@
 {
-  "extends": "plugin:bpmn-io/es5"
+  "extends": "plugin:bpmn-io/es5",
+  "rules": {
+    "no-bitwise": 0
+  }
 }
