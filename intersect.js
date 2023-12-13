@@ -99,13 +99,13 @@ function parsePathString(pathString) {
       });
 
       if (name == 'm' && params.length > 2) {
-        data.push([b].concat(params.splice(0, 2)));
+        data.push([ b ].concat(params.splice(0, 2)));
         name = 'l';
         b = b == 'm' ? 'l' : 'L';
       }
 
       while (params.length >= paramCounts[name]) {
-        data.push([b].concat(params.splice(0, paramCounts[name])));
+        data.push([ b ].concat(params.splice(0, paramCounts[name])));
         if (!paramCounts[name]) {
           break;
         }
@@ -238,8 +238,8 @@ function bezlen(x1, y1, x2, y2, x3, y3, x4, y4, z) {
 
   var z2 = z / 2,
       n = 12,
-      Tvalues = [-.1252,.1252,-.3678,.3678,-.5873,.5873,-.7699,.7699,-.9041,.9041,-.9816,.9816],
-      Cvalues = [0.2491,0.2491,0.2335,0.2335,0.2032,0.2032,0.1601,0.1601,0.1069,0.1069,0.0472,0.0472],
+      Tvalues = [ -.1252,.1252,-.3678,.3678,-.5873,.5873,-.7699,.7699,-.9041,.9041,-.9816,.9816 ],
+      Cvalues = [ 0.2491,0.2491,0.2335,0.2335,0.2032,0.2032,0.1601,0.1601,0.1069,0.1069,0.0472,0.0472 ],
       sum = 0;
 
   for (var i = 0; i < n; i++) {
@@ -419,11 +419,11 @@ export default function findPathIntersections(path1, path2, justCount) {
     } else {
 
       if (pi[0] == 'C') {
-        bez1 = [x1, y1].concat(pi.slice(1));
+        bez1 = [ x1, y1 ].concat(pi.slice(1));
         x1 = bez1[6];
         y1 = bez1[7];
       } else {
-        bez1 = [x1, y1, x1, y1, x1m, y1m, x1m, y1m];
+        bez1 = [ x1, y1, x1, y1, x1m, y1m, x1m, y1m ];
         x1 = x1m;
         y1 = y1m;
       }
@@ -437,11 +437,11 @@ export default function findPathIntersections(path1, path2, justCount) {
         } else {
 
           if (pj[0] == 'C') {
-            bez2 = [x2, y2].concat(pj.slice(1));
+            bez2 = [ x2, y2 ].concat(pj.slice(1));
             x2 = bez2[6];
             y2 = bez2[7];
           } else {
-            bez2 = [x2, y2, x2, y2, x2m, y2m, x2m, y2m];
+            bez2 = [ x2, y2, x2, y2, x2m, y2m, x2m, y2m ];
             x2 = x2m;
             y2 = y2m;
           }
@@ -482,7 +482,7 @@ function pathToAbsolute(pathArray) {
   }
 
   if (!pathArray || !pathArray.length) {
-    return [['M', 0, 0]];
+    return [ [ 'M', 0, 0 ] ];
   }
 
   var res = [],
@@ -499,7 +499,7 @@ function pathToAbsolute(pathArray) {
     mx = x;
     my = y;
     start++;
-    res[0] = ['M', x, y];
+    res[0] = [ 'M', x, y ];
   }
 
   for (var r, pa, i = start, ii = pathArray.length; i < ii; i++) {
@@ -668,7 +668,7 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
     f2 = f1 + _120 * (sweep_flag && f2 > f1 ? 1 : -1);
     x2 = cx + rx * math.cos(f2);
     y2 = cy + ry * math.sin(f2);
-    res = arcToCurve(x2, y2, rx, ry, angle, 0, sweep_flag, x2old, y2old, [f2, f2old, cx, cy]);
+    res = arcToCurve(x2, y2, rx, ry, angle, 0, sweep_flag, x2old, y2old, [ f2, f2old, cx, cy ]);
   }
 
   df = f2 - f1;
@@ -680,18 +680,18 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
       t = math.tan(df / 4),
       hx = 4 / 3 * rx * t,
       hy = 4 / 3 * ry * t,
-      m1 = [x1, y1],
-      m2 = [x1 + hx * s1, y1 - hy * c1],
-      m3 = [x2 + hx * s2, y2 - hy * c2],
-      m4 = [x2, y2];
+      m1 = [ x1, y1 ],
+      m2 = [ x1 + hx * s1, y1 - hy * c1 ],
+      m3 = [ x2 + hx * s2, y2 - hy * c2 ],
+      m4 = [ x2, y2 ];
 
   m2[0] = 2 * m1[0] - m2[0];
   m2[1] = 2 * m1[1] - m2[1];
 
   if (recursive) {
-    return [m2, m3, m4].concat(res);
+    return [ m2, m3, m4 ].concat(res);
   } else {
-    res = [m2, m3, m4].concat(res).join().split(',');
+    res = [ m2, m3, m4 ].concat(res).join().split(',');
     var newres = [];
 
     for (var i = 0, ii = res.length; i < ii; i++) {
@@ -708,7 +708,7 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
 // Modifications: https://github.com/timo22345
 function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   var tvalues = [],
-      bounds = [[], []],
+      bounds = [ [], [] ],
       a, b, c, t, t1, t2, b2ac, sqrtb2ac;
 
   for (var i = 0; i < 2; ++i) {
@@ -798,7 +798,7 @@ function pathToCurve(path) {
         var nx, ny;
 
         if (!path) {
-          return ['C', d.x, d.y, d.x, d.y, d.x, d.y];
+          return [ 'C', d.x, d.y, d.x, d.y, d.x, d.y ];
         }
 
         !(path[0] in { T: 1, Q: 1 }) && (d.qx = d.qy = null);
@@ -809,7 +809,7 @@ function pathToCurve(path) {
           d.Y = path[2];
           break;
         case 'A':
-          path = ['C'].concat(arcToCurve.apply(0, [d.x, d.y].concat(path.slice(1))));
+          path = [ 'C' ].concat(arcToCurve.apply(0, [ d.x, d.y ].concat(path.slice(1))));
           break;
         case 'S':
           if (pathCommand == 'C' || pathCommand == 'S') {
@@ -828,7 +828,7 @@ function pathToCurve(path) {
             nx = d.x;
             ny = d.y;
           }
-          path = ['C', nx, ny].concat(path.slice(1));
+          path = [ 'C', nx, ny ].concat(path.slice(1));
           break;
         case 'T':
           if (pathCommand == 'Q' || pathCommand == 'T') {
@@ -847,24 +847,24 @@ function pathToCurve(path) {
             d.qx = d.x;
             d.qy = d.y;
           }
-          path = ['C'].concat(qubicToCurve(d.x, d.y, d.qx, d.qy, path[1], path[2]));
+          path = [ 'C' ].concat(qubicToCurve(d.x, d.y, d.qx, d.qy, path[1], path[2]));
           break;
         case 'Q':
           d.qx = path[1];
           d.qy = path[2];
-          path = ['C'].concat(qubicToCurve(d.x, d.y, path[1], path[2], path[3], path[4]));
+          path = [ 'C' ].concat(qubicToCurve(d.x, d.y, path[1], path[2], path[3], path[4]));
           break;
         case 'L':
-          path = ['C'].concat(lineToCurve(d.x, d.y, path[1], path[2]));
+          path = [ 'C' ].concat(lineToCurve(d.x, d.y, path[1], path[2]));
           break;
         case 'H':
-          path = ['C'].concat(lineToCurve(d.x, d.y, path[1], d.y));
+          path = [ 'C' ].concat(lineToCurve(d.x, d.y, path[1], d.y));
           break;
         case 'V':
-          path = ['C'].concat(lineToCurve(d.x, d.y, d.x, path[1]));
+          path = [ 'C' ].concat(lineToCurve(d.x, d.y, d.x, path[1]));
           break;
         case 'Z':
-          path = ['C'].concat(lineToCurve(d.x, d.y, d.X, d.Y));
+          path = [ 'C' ].concat(lineToCurve(d.x, d.y, d.X, d.Y));
           break;
         }
 
@@ -879,7 +879,7 @@ function pathToCurve(path) {
 
           while (pi.length) {
             pathCommands[i] = 'A'; // if created multiple C:s, their original seg is saved
-            pp.splice(i++, 0, ['C'].concat(pi.splice(0, 6)));
+            pp.splice(i++, 0, [ 'C' ].concat(pi.splice(0, 6)));
           }
 
           pp.splice(i, 1);
