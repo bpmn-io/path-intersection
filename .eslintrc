@@ -1,5 +1,5 @@
 {
-  "extends": "plugin:bpmn-io/es5",
+  "extends": "plugin:bpmn-io/browser",
   "rules": {
     "no-bitwise": 0
   }
