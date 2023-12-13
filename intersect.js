@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This file contains source code adapted from Snap.svg (licensed Apache-2.0).
  *
@@ -405,7 +403,7 @@ function findBezierIntersections(bez1, bez2, justCount) {
  *
  * @return {Array<Intersection>|Number}
  */
-function findPathIntersections(path1, path2, justCount) {
+export default function findPathIntersections(path1, path2, justCount) {
   path1 = pathToCurve(path1);
   path2 = pathToCurve(path2);
 
@@ -923,5 +921,3 @@ function pathToCurve(path) {
 
   return curvedPath;
 }
-
-module.exports = findPathIntersections;
