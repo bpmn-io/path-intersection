@@ -1,8 +1,6 @@
-'use strict';
+import intersect from '../intersect.js';
 
-var intersect = require('../');
-
-var domify = require('domify');
+import domify from 'domify';
 
 
 describe('path-intersection', function() {
