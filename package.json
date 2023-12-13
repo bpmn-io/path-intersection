@@ -43,5 +43,10 @@
     "sinon": "^9.2.4",
     "sinon-chai": "^3.5.0",
     "webpack": "^5.25.1"
-  }
+  },
+  "files": [
+    "intersect.js",
+    "intersect.d.ts",
+    "NOTICE"
+  ]
 }
