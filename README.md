@@ -29,9 +29,11 @@ Results are approximate, as we use [bezier clipping](https://math.stackexchange.
 
 ## Building the Project
 
-Perform a full build of the library (lint + test) via
-
 ```
+# install dependencies
+npm install
+
+# build and test the library
 npm run all
 ```
 
