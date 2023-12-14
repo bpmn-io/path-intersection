@@ -11,6 +11,9 @@
     "dev": "npm test -- --auto-watch --no-single-run",
     "test": "karma start karma.conf.cjs"
   },
+  "engines": {
+    "node": ">= 14.20"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/bpmn-io/path-intersection"
