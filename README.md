@@ -15,12 +15,12 @@ Execute `npm run dev` and navigate to [`http://localhost:9876/debug.html`](http:
 ## Usage
 
 ```javascript
-var intersect = require('path-intersection');
+import intersect from 'path-intersection';
 
-var path0 = 'M30,100L270,20';
-var path1 = 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z';
+const path0 = 'M30,100L270,20';
+const path1 = 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z';
 
-var intersection = intersect(path0, path1);
+const intersection = intersect(path0, path1);
 // [ { x: ..., y: ..., segment1: ..., segment2: ... }, ... ]
 ```
 
