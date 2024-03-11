@@ -6,6 +6,11 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 3.1.0
+
+* `FIX`: correct type declaration ([#23](https://github.com/bpmn-io/path-intersection/pull/23))
+* `CHORE`: add `exports` field
+
 ## 3.0.0
 
 * `FEAT`: turn into module
