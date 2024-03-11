@@ -34,7 +34,7 @@ declare function findPathIntersections(path1: Path, path2: Path, justCount: fals
 declare function findPathIntersections(path1: Path, path2: Path): Intersection[];
 declare function findPathIntersections(path1: Path, path2: Path, justCount?: boolean): Intersection[] | number;
 
-export = findPathIntersections;
+export default findPathIntersections;
 
 /**
  * A string in the form of 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z'
@@ -91,3 +91,5 @@ declare interface Intersection {
    */
   t2: number;
 }
+
+export type { Intersection, Path, PathComponent };
