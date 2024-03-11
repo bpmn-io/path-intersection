@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "checkJs": true,
+    "noImplicitAny": false
+  },
+  "include": [
+    "test"
+  ]
+}

@@ -390,13 +390,13 @@ function debug(label, pathArray, intersectionsArray, fail) {
     '</g>' +
   '</svg>';
 
-  var svgNode = domify(svg);
+  var svgNode = /** @type {SVGElement} */ (domify(svg));
 
   // show debug SVG
   document.body.appendChild(svgNode);
 
   // center visible elements group
-  var group = svgNode.querySelector('g');
+  var group = /** @type {SVGGElement} */ (svgNode.querySelector('g'));
 
   var bbox = group.getBBox();
 

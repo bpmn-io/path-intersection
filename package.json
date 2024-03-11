@@ -13,10 +13,11 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "all": "run-s lint test",
+    "all": "run-s lint check-types test",
     "lint": "eslint .",
     "dev": "npm test -- --auto-watch --no-single-run",
-    "test": "karma start karma.conf.cjs"
+    "test": "karma start karma.conf.cjs",
+    "check-types": "tsc --noEmit"
   },
   "engines": {
     "node": ">= 14.20"
@@ -36,6 +37,9 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.3.12",
+    "@types/karma-chai": "^0.1.6",
+    "@types/mocha": "^10.0.6",
     "chai": "^4.4.1",
     "domify": "^2.0.0",
     "eslint": "^8.55.0",
@@ -51,6 +55,7 @@
     "puppeteer": "^22.4.1",
     "sinon": "^17.0.1",
     "sinon-chai": "^3.7.0",
+    "typescript": "^5.4.2",
     "webpack": "^5.90.3"
   },
   "files": [
