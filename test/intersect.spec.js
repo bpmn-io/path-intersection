@@ -1,4 +1,4 @@
-import intersect from '../intersect.js';
+import intersect from 'path-intersection';
 
 import domify from 'domify';
 
