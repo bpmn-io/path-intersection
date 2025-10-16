@@ -75,12 +75,6 @@ function parsePathString(pathString) {
     return null;
   }
 
-  var pth = paths(pathString);
-
-  if (pth.arr) {
-    return clone(pth.arr);
-  }
-
   var paramCounts = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
       data = [];
 
@@ -114,7 +108,6 @@ function parsePathString(pathString) {
   }
 
   data.toString = paths.toString;
-  pth.arr = clone(data);
 
   return data;
 }
@@ -407,8 +400,8 @@ function findBezierIntersections(bez1, bez2, justCount) {
  * @return {Array<Intersection>|Number}
  */
 export default function findPathIntersections(path1, path2, justCount) {
-  path1 = pathToCurve(path1);
-  path2 = pathToCurve(path2);
+  path1 = getPathCurve(path1);
+  path2 = getPathCurve(path2);
 
   var x1, y1, x2, y2, x1m, y1m, x2m, y2m, bez1, bez2,
       res = justCount ? 0 : [];
@@ -476,15 +469,6 @@ export default function findPathIntersections(path1, path2, justCount) {
 
 
 function pathToAbsolute(pathArray) {
-  var pth = paths(pathArray);
-
-  if (pth.abs) {
-    return pathClone(pth.abs);
-  }
-
-  if (!isArray(pathArray) || !isArray(pathArray && pathArray[0])) { // rough assumption
-    pathArray = parsePathString(pathArray);
-  }
 
   if (!pathArray || !pathArray.length) {
     return [ [ 'M', 0, 0 ] ];
@@ -567,7 +551,6 @@ function pathToAbsolute(pathArray) {
   }
 
   res.toString = pathToString;
-  pth.abs = pathClone(res);
 
   return res;
 }
@@ -788,16 +771,39 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   };
 }
 
-function pathToCurve(path) {
+/**
+ * Handles caches
+ */
+function getPathCurve(path) {
 
-  var pth = paths(path);
+  const pth = paths(path);
 
   // return cached curve, if existing
   if (pth.curve) {
     return pathClone(pth.curve);
   }
 
-  var curvedPath = pathToAbsolute(path),
+  // retrieve abs path OR create and cache if non existing
+  const abs = pth.abs ||
+    (pth.abs = pathToAbsolute(
+
+      // retrieve parsed path OR create and cache if non existing
+      pth.arr ||
+      (pth.arr = (
+
+        // rough assumption
+        (!isArray(path) || !isArray(path && path[0]))) ?
+        parsePathString(path) :
+        path)
+    ));
+
+  // cache curve
+  return pathClone(pth.curve = pathToCurve(abs));
+}
+
+function pathToCurve(absPath) {
+
+  var curvedPath = pathClone(absPath),
       attrs = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
       processPath = function(path, d, pathCommand) {
         var nx, ny;
@@ -920,9 +926,6 @@ function pathToCurve(path) {
     attrs.bx = toFloat(seg[seglen - 4]) || attrs.x;
     attrs.by = toFloat(seg[seglen - 3]) || attrs.y;
   }
-
-  // cache curve
-  pth.curve = pathClone(curvedPath);
 
   return curvedPath;
 }
