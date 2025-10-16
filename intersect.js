@@ -299,13 +299,14 @@ function fixError(number) {
   return Math.round(number * 100000000000) / 100000000000;
 }
 
-function findBezierIntersections(bez1, bez2, justCount) {
+function bezierBBoxIntersects(bez1, bez2) {
   var bbox1 = bezierBBox(bez1),
       bbox2 = bezierBBox(bez2);
 
-  if (!isBBoxIntersect(bbox1, bbox2)) {
-    return justCount ? 0 : [];
-  }
+  return isBBoxIntersect(bbox1, bbox2);
+}
+
+function findBezierIntersections(bez1, bez2, justCount) {
 
   // As an optimization, lines will have only 1 segment
 
@@ -448,7 +449,9 @@ export default function findPathIntersections(path1, path2, justCount) {
             y2 = y2m;
           }
 
-          var intr = findBezierIntersections(bez1, bez2, justCount);
+          var intr = bezierBBoxIntersects(bez1, bez2) ?
+            findBezierIntersections(bez1, bez2, justCount) :
+            justCount ? 0 : [];
 
           if (justCount) {
             res += intr;
