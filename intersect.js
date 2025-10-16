@@ -23,23 +23,6 @@ function hasProperty(obj, property) {
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
-function clone(obj) {
-
-  if (typeof obj == 'function' || Object(obj) !== obj) {
-    return obj;
-  }
-
-  var res = new obj.constructor;
-
-  for (var key in obj) {
-    if (hasProperty(obj, key)) {
-      res[key] = clone(obj[key]);
-    }
-  }
-
-  return res;
-}
-
 function repush(array, item) {
   for (var i = 0, ii = array.length; i < ii; i++) if (array[i] === item) {
     return array.push(array.splice(i, 1)[0]);
@@ -77,10 +60,6 @@ function parsePathString(pathString) {
 
   var paramCounts = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
       data = [];
-
-  if (isArray(pathString) && isArray(pathString[0])) { // rough assumption
-    data = clone(pathString);
-  }
 
   if (!data.length) {
 
@@ -159,7 +138,16 @@ function pathToString() {
 }
 
 function pathClone(pathArray) {
-  var res = clone(pathArray);
+  const res = new Array(pathArray.length);
+  for (let i = 0; i < pathArray.length; i++) {
+    const sourceRow = pathArray[i];
+    const destinationRow = new Array(sourceRow.length);
+    res[i] = destinationRow;
+    for (let j = 0; j < sourceRow.length; j++) {
+      destinationRow[j] = sourceRow[j];
+    }
+  }
+
   res.toString = pathToString;
   return res;
 }
