@@ -311,7 +311,9 @@ function findBezierIntersections(bez1, bez2, justCount) {
 
   var l1 = bezlen(...bez1),
       l2 = bezlen(...bez2),
+      // eslint-disable-next-line no-bitwise
       n1 = isLine(bez1) ? 1 : ~~(l1 / 5) || 1,
+      // eslint-disable-next-line no-bitwise
       n2 = isLine(bez2) ? 1 : ~~(l2 / 5) || 1,
       dots1 = [],
       dots2 = [],
