@@ -1,4 +1,5 @@
 import intersect from 'path-intersection';
+import { expect } from 'chai';
 
 import domify from 'domify';
 
