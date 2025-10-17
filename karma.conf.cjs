@@ -13,7 +13,6 @@ module.exports = function(karma) {
 
     frameworks: [
       'mocha',
-      'sinon-chai',
       'webpack'
     ],
 
