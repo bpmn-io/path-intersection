@@ -684,7 +684,7 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
 // Source: http://blog.hackers-cafe.net/2009/06/how-to-calculate-bezier-curves-bounding.html
 // Original version: NISHIO Hirokazu
 // Modifications: https://github.com/timo22345
-function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
+export function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   var tvalues = [],
       bounds = [ [], [] ],
       a, b, c, t, t1, t2, b2ac, sqrtb2ac;
