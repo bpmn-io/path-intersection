@@ -768,7 +768,7 @@ function getPathCurve(path) {
 
   // return cached curve, if existing
   if (pth.curve) {
-    return pathClone(pth.curve);
+    return pth.curve;
   }
 
   // retrieve abs path OR create and cache if non existing
@@ -786,7 +786,7 @@ function getPathCurve(path) {
     ));
 
   // cache curve
-  return pathClone(pth.curve = pathToCurve(abs));
+  return (pth.curve = pathToCurve(abs));
 }
 
 function pathToCurve(absPath) {
