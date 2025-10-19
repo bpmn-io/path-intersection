@@ -1,4 +1,3 @@
-
 /**
  * Find or counts the intersections between two SVG paths.
  *
@@ -48,7 +47,7 @@ export default findPathIntersections;
  * ]
  */
 declare type Path = string | PathComponent[];
-declare type PathComponent = any[];
+declare type PathComponent = [cmd: string, ...number[]];
 
 declare interface Intersection {
   /**

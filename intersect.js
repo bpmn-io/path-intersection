@@ -287,6 +287,13 @@ function bezierBBoxIntersects(bez1, bez2) {
   return isBBoxIntersect(bbox1, bbox2);
 }
 
+/**
+ *
+ * @param {import("./intersect").PathComponent} bez1
+ * @param {import("./intersect").PathComponent} bez2
+ * @param {boolean} [justCount=false]
+ * @returns {import("./intersect").Intersection}
+ */
 function findBezierIntersections(bez1, bez2, justCount) {
 
   // As an optimization, lines will have only 1 segment
@@ -381,11 +388,11 @@ function findBezierIntersections(bez1, bez2, justCount) {
  * //   { x: 50, y: 50, segment1: 1, segment2: 1, t1: 0.5, t2: 0.5 }
  * // ]
  *
- * @param {String|Array<PathDef>} path1
- * @param {String|Array<PathDef>} path2
- * @param {Boolean} [justCount=false]
+ * @param {import("./intersect").Path} path1
+ * @param {import("./intersect").Path} path2
+ * @param {boolean} [justCount=false]
  *
- * @return {Array<Intersection>|Number}
+ * @return {import("./intersect").Intersection[] | number}
  */
 export default function findPathIntersections(path1, path2, justCount) {
   path1 = getPathCurve(path1);
@@ -454,7 +461,6 @@ export default function findPathIntersections(path1, path2, justCount) {
 
   return res;
 }
-
 
 function pathToAbsolute(pathArray) {
 
