@@ -1,4 +1,4 @@
-import intersect from 'path-intersection';
+import intersect, { parsePathCurve } from 'path-intersection';
 import { expect } from 'chai';
 
 import domify from 'domify';
@@ -19,6 +19,21 @@ describe('path-intersection', function() {
 
       // then
       expect(intersections).to.have.length(1);
+    });
+
+    it('parsePathCurve', function() {
+
+      // when
+      var parsed1 = parsePathCurve(p1);
+      var parsed2 = parsePathCurve(p2);
+
+      // then
+      expect(parsed1).to.deep.eq([['M', 0, 0], ['C', 0, 0, 100, 100, 100, 100]])
+      expect(parsed1.parsed).to.eq(true)
+
+      expect(parsed2).to.deep.eq([['M', 0, 100], ['C', 0, 100, 100, 0, 100, 0]])
+      expect(parsed2.parsed).to.eq(true)
+
     });
 
 

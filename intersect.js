@@ -395,8 +395,8 @@ function findBezierIntersections(bez1, bez2, justCount) {
  * @return {import("./intersect").Intersection[] | number}
  */
 export default function findPathIntersections(path1, path2, justCount) {
-  path1 = getPathCurve(path1);
-  path2 = getPathCurve(path2);
+  path1 = path1.parsed ? path1 : getPathCurve(path1);
+  path2 = path2.parsed ? path2 : getPathCurve(path2);
 
   var x1, y1, x2, y2, x1m, y1m, x2m, y2m, bez1, bez2,
       res = justCount ? 0 : [];
@@ -766,7 +766,7 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
 }
 
 /**
- * Handles caches
+ * An impure version of {@link parsePathCurve} handling caching
  */
 function getPathCurve(path) {
 
@@ -793,6 +793,36 @@ function getPathCurve(path) {
 
   // cache curve
   return (pth.curve = pathToCurve(abs));
+}
+
+/**
+ * A pure version of {@link getPathCurve}
+ * @param {import("./intersect").Path} path
+ * @returns {import("./intersect").PathComponent[]}
+ */
+export function parsePathCurve(path) {
+
+  const abs = (pathToAbsolute(
+    !Array.isArray(path) ?
+      parsePathString(path) :
+      path)
+  );
+
+  const curve = pathToCurve(abs);
+
+  /**
+   * Flag to skip {@link getPathCurve}
+   */
+  return Object.defineProperty(
+    curve,
+    'parsed',
+    {
+      value: true,
+      configurable: false,
+      enumerable: false,
+      writable: false
+    }
+  );
 }
 
 function pathToCurve(absPath) {

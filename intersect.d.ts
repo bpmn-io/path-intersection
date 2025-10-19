@@ -36,6 +36,18 @@ declare function findPathIntersections(path1: Path, path2: Path, justCount?: boo
 export default findPathIntersections;
 
 /**
+ * Parse a path so it is suitable to pass to {@link findPathIntersections}
+ * Used in order to opt out of internal path caching.
+ * 
+ * @example
+ * const p1 = parsePathCurve('M0,0L100,100');
+ * const p2 = parsePathCurve([ [ 'M', 0, 100 ], [ 'L', 100, 0 ] ]);
+ * const intersections = findPathIntersections(p1, p2);
+ * 
+ */
+export declare function parsePathCurve(path: Path): PathComponent[]
+
+/**
  * A string in the form of 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z'
  * or something like:
  * [
