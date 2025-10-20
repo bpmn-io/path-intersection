@@ -24,8 +24,8 @@ describe('path-intersection', function() {
     it('parsePathCurve', function() {
 
       // when
-      var parsed1 = parsePathCurve(p1);
-      var parsed2 = parsePathCurve(p2);
+      const parsed1 = parsePathCurve(p1);
+      const parsed2 = parsePathCurve(p2);
 
       // then
       expect(parsed1).to.deep.eq([['M', 0, 0], ['C', 0, 0, 100, 100, 100, 100]])
@@ -33,6 +33,22 @@ describe('path-intersection', function() {
 
       expect(parsed2).to.deep.eq([['M', 0, 100], ['C', 0, 100, 100, 0, 100, 0]])
       expect(parsed2.parsed).to.eq(true)
+
+      expect(intersect(parsed1, parsed2)).to.deep.eq([
+        {
+          x: 50,
+          y: 50,
+          segment1: 1,
+          segment2: 1,
+          t1: 0.5,
+          t2: 0.5,
+          bez1: [0, 0, 0, 0, 100, 100, 100, 100],
+          bez2: [0, 100, 0, 100, 100, 0, 100, 0]
+        }
+      ])
+
+      expect(parsed1, 'intersect should not mutate paths').to.deep.eq([['M', 0, 0], ['C', 0, 0, 100, 100, 100, 100]])
+      expect(parsed2, 'intersect should not mutate paths').to.deep.eq([['M', 0, 100], ['C', 0, 100, 100, 0, 100, 0]])
 
     });
 
