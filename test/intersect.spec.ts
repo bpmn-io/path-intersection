@@ -1,14 +1,12 @@
-import intersect from 'path-intersection';
-
-import domify from 'domify';
+import intersect, { Path } from 'path-intersection';
 
 
 describe('path-intersection', function() {
 
   describe('api', function() {
 
-    var p1 = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ];
-    var p2 = 'M0,100L100,0';
+    const p1: Path = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ];
+    const p2: Path = 'M0,100L100,0';
 
 
     it('should support SVG path and component args', function() {
