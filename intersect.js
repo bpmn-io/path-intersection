@@ -280,13 +280,6 @@ function fixError(number) {
   return Math.round(number * 100000000000) / 100000000000;
 }
 
-function bezierBBoxIntersects(bez1, bez2) {
-  var bbox1 = bezierBBox(bez1),
-      bbox2 = bezierBBox(bez2);
-
-  return isBBoxIntersect(bbox1, bbox2);
-}
-
 /**
  *
  * @param {import("./intersect").PathComponent} bez1
@@ -398,7 +391,7 @@ export default function findPathIntersections(path1, path2, justCount) {
   path1 = path1.parsed ? path1 : getPathCurve(path1);
   path2 = path2.parsed ? path2 : getPathCurve(path2);
 
-  var x1, y1, x2, y2, x1m, y1m, x2m, y2m, bez1, bez2,
+  var x1, y1, x2, y2, x1m, y1m, x2m, y2m, bez1, bez2, bbox1, bbox2,
       res = justCount ? 0 : [];
 
   for (var i = 0, ii = path1.length; i < ii; i++) {
@@ -437,7 +430,10 @@ export default function findPathIntersections(path1, path2, justCount) {
             y2 = y2m;
           }
 
-          var intr = bezierBBoxIntersects(bez1, bez2) ?
+          bbox1 = bezierBBox(bez1);
+          bbox2 = bezierBBox(bez2);
+
+          var intr = isBBoxIntersect(bbox1, bbox2) ?
             findBezierIntersections(bez1, bez2, justCount) :
             justCount ? 0 : [];
 
