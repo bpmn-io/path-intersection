@@ -297,19 +297,19 @@ function findBezierIntersections(bez1, bez2, justCount) {
       n1 = isLine(bez1) ? 1 : ~~(l1 / 5) || 1,
       // eslint-disable-next-line no-bitwise
       n2 = isLine(bez2) ? 1 : ~~(l2 / 5) || 1,
-      dots1 = [],
-      dots2 = [],
+      dots1 = new Array(n1 + 1),
+      dots2 = new Array(n2 + 1),
       xy = {},
       res = justCount ? 0 : [];
 
   for (var i = 0; i < n1 + 1; i++) {
     var p = findDotsAtSegment(...bez1, i / n1);
-    dots1.push({ x: p.x, y: p.y, t: i / n1 });
+    dots1[i] = { x: p.x, y: p.y, t: i / n1 };
   }
 
   for (i = 0; i < n2 + 1; i++) {
     p = findDotsAtSegment(...bez2, i / n2);
-    dots2.push({ x: p.x, y: p.y, t: i / n2 });
+    dots2[i] = { x: p.x, y: p.y, t: i / n2 };
   }
 
   for (i = 0; i < n1; i++) {
