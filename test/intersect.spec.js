@@ -21,6 +21,30 @@ describe('path-intersection', function() {
       expect(intersections).to.have.length(1);
     });
 
+    it('should cache paths to boost performance', function() {
+
+      const max = 1000;
+      const p1 = [ 
+        [ 'M', 0, 0 ], 
+        ...new Array(max).fill(0).map((_, i) => [ 'L', max * (i + 1), max * (i + 1) ])
+      ];
+      const p2 = [ 
+        [ 'M', 0, max * max ], 
+        ...new Array(max).fill(0).map((_, i) => [ 'L', max * (i + 1), max * (max - i + 1) ])
+      ].flat().join(',');
+
+      // when
+      performance.mark('a')
+      const ra = intersect(p1, p2);
+      const { duration: a } = performance.measure('not cached', 'a');
+      performance.mark('b')
+      const rb = intersect(p1, p2);
+      const { duration: b } = performance.measure('cached', 'b');
+      // then
+      expect(b).to.lessThanOrEqual(a);
+      expect(rb).to.deep.eq(ra);
+    });
+
     it('parsePathCurve', function() {
 
       // when
