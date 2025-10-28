@@ -59,7 +59,9 @@ export declare function parsePathCurve(path: Path): PathComponent[]
  * ]
  */
 declare type Path = string | PathComponent[];
-declare type PathComponent = [cmd: string, ...number[]];
+declare type RelativePathCmd = 'a' | 'c' | 'h' | 'l' | 'm' | 'q' | 's' | 't' | 'v' | 'z';
+declare type AbsolutePathCmd = Capitalize<RelativePathCmd>;
+declare type PathComponent = [cmd: AbsolutePathCmd | RelativePathCmd, ...number[]];
 
 declare interface Intersection {
   /**
