@@ -54,7 +54,14 @@ export default findPathIntersections;
  * ]
  */
 declare type Path = string | PathComponent[];
-declare type PathComponent = any[];
+/**
+ * A SVG path component, stored as an array with the operation, and parameters.
+ * 
+ * @example
+ *
+ * ['M', 1, 2]
+ */
+declare type PathComponent = [ string, ...number[] ];
 
 declare interface Intersection {
   /**
