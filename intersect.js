@@ -29,23 +29,6 @@ function hasProperty(obj, property) {
   return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
-function clone(obj) {
-
-  if (typeof obj == 'function' || Object(obj) !== obj) {
-    return obj;
-  }
-
-  var res = new obj.constructor;
-
-  for (var key in obj) {
-    if (hasProperty(obj, key)) {
-      res[key] = clone(obj[key]);
-    }
-  }
-
-  return res;
-}
-
 function repush(array, item) {
   for (var i = 0, ii = array.length; i < ii; i++) if (array[i] === item) {
     return array.push(array.splice(i, 1)[0]);
@@ -184,9 +167,21 @@ function pathToString() {
  * @return {PathComponent[]}
  */
 function pathClone(pathComponents) {
-  var res = clone(pathComponents);
-  res.toString = pathToString;
-  return res;
+
+  var pathComponentsClone = new Array(pathComponents.length);
+
+  for (var i = 0, ii = pathComponents.length; i < ii; i++) {
+    var component = pathComponents[i];
+    var componentClone = pathComponentsClone[i] = new Array(component.length);
+
+    for (var j = 0, jj = component.length; j < jj; j++) {
+      componentClone[j] = component[j];
+    }
+  }
+
+  pathComponentsClone.toString = pathToString;
+
+  return pathComponentsClone;
 }
 
 function findDotsAtSegment(p1x, p1y, c1x, c1y, c2x, c2y, p2x, p2y, t) {
