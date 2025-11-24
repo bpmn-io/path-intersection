@@ -120,6 +120,55 @@ describe('path-intersection', function() {
       expect(intersections[0].y).to.eql(50);
     });
 
+
+    it('should provide performance improvement with parsePath', function() {
+
+      // given
+      var p1 = 'M123,50L243,150';
+      var p2 = (
+        'M100,100l80,0' +
+        'a10,10,0,0,1,10,10l0,60' +
+        'a10,10,0,0,1,-10,10l-80,0' +
+        'a10,10,0,0,1,-10,-10l0,-60' +
+        'a10,10,0,0,1,10,-10z'
+      );
+
+
+      // assume - warm up
+      timeParse(p1, p2, iterations);
+
+      var results = [];
+
+      // repeat a couple of times
+      for (var i = 0; i < 100; i++) {
+
+        var iterations = 100;
+
+        // when
+        var stringTime = timeParse(p1, p2, iterations);
+        var cachedTime = timeParse(parsePath(p1), parsePath(p1), iterations);
+
+        // then
+        var speedup = stringTime / cachedTime;
+
+        results.push({
+          stringTime,
+          cachedTime,
+          speedup
+        });
+
+        expect(speedup).to.be.at.least(6);
+      }
+
+      results.push({
+        stringTime: results.reduce((sum, r) => sum + r.stringTime, 0) / results.length,
+        cachedTime: results.reduce((sum, r) => sum + r.cachedTime, 0) / results.length,
+        speedup: results.reduce((sum, r) => sum + r.speedup, 0) / results.length,
+      });
+
+      console.table(results);
+    });
+
   });
 
 
@@ -516,6 +565,15 @@ function testScenario(paths) {
     debug(label, paths, intersections);
   });
 
+}
+
+function timeParse(p1, p2, iterations) {
+  var start = performance.now();
+
+  for (var i = 0; i < iterations; i++) {
+    intersect(p1, p2);
+  }
+  return performance.now() - start;
 }
 
 function test(label, options) {
