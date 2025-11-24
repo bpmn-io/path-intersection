@@ -512,7 +512,7 @@ function pathToAbsolute(pathComponents) {
     return pathComponents;
   }
 
-  var res = [],
+  var res = new Array(pathComponents.length),
       x = 0,
       y = 0,
       mx = 0,
@@ -530,9 +530,9 @@ function pathToAbsolute(pathComponents) {
   }
 
   for (var r, pa, i = start, ii = pathComponents.length; i < ii; i++) {
-    res.push(r = []);
     pa = pathComponents[i];
     pa0 = pa[0];
+    res[i] = (r = new Array(pa.length));
 
     if (pa0 != pa0.toUpperCase()) {
       r[0] = pa0.toUpperCase();
