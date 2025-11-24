@@ -27,6 +27,25 @@ const intersection = intersect(path0, path1);
 Results are approximate, as we use [bezier clipping](https://math.stackexchange.com/questions/118937) to find intersections.
 
 
+## Path Caching
+
+Where performance matters, you can pre-parse paths and cache them:
+
+```javascript
+import intersect, { parsePath } from 'path-intersection';
+
+// parse paths once
+const path1 = parsePath('M0,0L100,100');
+const path2 = parsePath('M0,100L100,0');
+
+// they won't be re-parsed during intersection checking
+const result1 = intersect(path1, path2);
+const result2 = intersect(path2, path2);
+```
+
+For repeated calculations, this optimization can result in substantial performance improvements.
+
+
 ## Building the Project
 
 ```

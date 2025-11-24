@@ -1,4 +1,4 @@
-import intersect from 'path-intersection';
+import intersect, { parsePath, Path } from 'path-intersection';
 
 import domify from 'domify';
 
@@ -7,7 +7,7 @@ describe('path-intersection', function() {
 
   describe('api', function() {
 
-    var p1 = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ];
+    var p1 = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ] satisfies Path;
     var p2 = 'M0,100L100,0';
 
 
@@ -32,6 +32,26 @@ describe('path-intersection', function() {
         't1',
         't2'
       ]);
+    });
+
+
+    describe('utility exports', function() {
+
+      it('should export parsePath utility', function() {
+
+        // given
+        var pathString = 'M0,0L100,100';
+
+        // when
+        var parsed = parsePath(pathString);
+
+        // then
+        expect(parsed).to.eql([
+          ['M', 0, 0],
+          ['C', 0, 0, 100, 100, 100, 100]
+        ]);
+      });
+
     });
 
   });
