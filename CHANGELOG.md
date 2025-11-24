@@ -6,6 +6,13 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 4.0.0
+
+* `FEAT`: remove internal caching logic in favor of robust external path caching mechanism ([#31](https://github.com/bpmn-io/path-intersection/pull/31))
+* `FEAT`: allow pre-computation of paths for later intersection ([#25](https://github.com/bpmn-io/path-intersection/issues/25), [#31](https://github.com/bpmn-io/path-intersection/pull/31))
+* `DOCS`: improve various type declarations ([#31](https://github.com/bpmn-io/path-intersection/pull/31))
+* `CHORE`: apply various minor internal optimizations ([#31](https://github.com/bpmn-io/path-intersection/pull/31))
+
 ## 3.1.0
 
 * `FIX`: correct type declaration ([#23](https://github.com/bpmn-io/path-intersection/pull/23))
