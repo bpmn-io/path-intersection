@@ -23,11 +23,11 @@
  * //   { x: 50, y: 50, segment1: 1, segment2: 1, t1: 0.5, t2: 0.5 }
  * // ];
  *
- * @param {String|Array<PathComponent>} path1
- * @param {String|Array<PathComponent>} path2
- * @param {Boolean} [justCount=false]
+ * @param {Path} path1
+ * @param {Path} path2
+ * @param {boolean} [justCount=false]
  *
- * @return {Array<Intersection>|Number}
+ * @return {Intersection[]|number}
  */
 declare function findPathIntersections(path1: Path, path2: Path, justCount: true): number;
 declare function findPathIntersections(path1: Path, path2: Path, justCount: false): Intersection[];
@@ -37,14 +37,20 @@ declare function findPathIntersections(path1: Path, path2: Path, justCount?: boo
 export default findPathIntersections;
 
 /**
- * A string in the form of 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z'
- * or something like:
+ * A SVG path string, or it's array encoded version.
+ *
+ * @example
+ *
+ * "M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z"
+ *
+ * @example
+ *
  * [
- *  ['M', 1, 2],
- *  ['m', 0, -2],
- *  ['a', 1, 1, 0, 1, 1, 0, 2 * 1],
- *  ['a', 1, 1, 0, 1, 1, 0, -2 * 1],
- *  ['z']
+ *   ['M', 1, 2],
+ *   ['m', 0, -2],
+ *   ['a', 1, 1, 0, 1, 1, 0, 2 * 1],
+ *   ['a', 1, 1, 0, 1, 1, 0, -2 * 1],
+ *   ['z']
  * ]
  */
 declare type Path = string | PathComponent[];
