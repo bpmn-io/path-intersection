@@ -1,4 +1,4 @@
-import intersect from 'path-intersection';
+import intersect, { parsePath } from 'path-intersection';
 import { expect } from 'chai';
 
 import domify from 'domify';
@@ -8,11 +8,11 @@ describe('path-intersection', function() {
 
   describe('api', function() {
 
-    var p1 = [ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ];
-    var p2 = 'M0,100L100,0';
+    it('should support SVG and component paths', function() {
 
-
-    it('should support SVG path and component args', function() {
+      // given
+      var p1 = Object.freeze([ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ]);
+      var p2 = 'M0,100L100,0';
 
       // when
       var intersections = intersect(p1, p2);
@@ -23,6 +23,10 @@ describe('path-intersection', function() {
 
 
     it('should expose intersection', function() {
+
+      // given
+      var p1 = Object.freeze([ [ 'M', 0, 0 ], [ 'L', 100, 100 ] ]);
+      var p2 = 'M0,100L100,0';
 
       // when
       var intersection = intersect(p1, p2)[0];
@@ -36,6 +40,84 @@ describe('path-intersection', function() {
       expect(intersection.t2).to.eql(0.5);
       expect(intersection.bez1).to.exist;
       expect(intersection.bez2).to.exist;
+    });
+
+
+    it('should support pre-parsed paths', function() {
+
+      // given
+      var curvePath = Object.freeze([
+        [ 'M', 0, 0 ],
+        [ 'C', 0, 0, 100, 100, 100, 100 ]
+      ]);
+
+      var absPath = Object.freeze([
+        [ 'M', 0, 100 ],
+        [ 'L', 100, 0 ]
+      ]);
+
+      // when
+      var intersections = intersect(curvePath, absPath);
+
+      // then
+      expect(intersections).to.have.length(1);
+      expect(intersections[0].x).to.eql(50);
+      expect(intersections[0].y).to.eql(50);
+    });
+
+
+    it('should support mixed pre-parsed and string paths', function() {
+
+      // given
+      var curvePath = Object.freeze([
+        [ 'M', 0, 0 ],
+        [ 'C', 0, 0, 100, 100, 100, 100 ]
+      ]);
+      var stringPath = 'M0,100L100,0';
+
+      // when
+      var intersections = intersect(curvePath, stringPath);
+
+      // then
+      expect(intersections).to.have.length(1);
+      expect(intersections[0].x).to.eql(50);
+      expect(intersections[0].y).to.eql(50);
+    });
+
+  });
+
+
+  describe('utility exports', function() {
+
+    it('should export parsePath utility', function() {
+
+      // given
+      var pathString = 'M0,0L100,100';
+
+      // when
+      var parsed = parsePath(pathString);
+
+      // then
+      expect(parsed).to.eql([
+        ['M', 0, 0],
+        ['C', 0, 0, 100, 100, 100, 100]
+      ]);
+    });
+
+
+    it('should use parsePath with intersect', function() {
+
+      // given
+      var p1 = parsePath('M0,0L100,100');
+      var p2 = parsePath('M0,100L100,0');
+
+      // when
+      var intersections = intersect(p1, p2);
+
+      // then
+      expect(intersections).to.have.length(1);
+      expect(intersections[0].x).to.eql(50);
+      expect(intersections[0].y).to.eql(50);
     });
 
   });
@@ -313,16 +395,19 @@ describe('path-intersection', function() {
       'M423,497L423,180L300,262 M423,472l25,25l-25,25l-25,-25z M297,233l80,0a10,10,0,0,1,10,10l0,60a10,10,0,0,1,-10,10l-80,0a10,10,0,0,1,-10,-10l0,-60a10,10,0,0,1,10,-10z'
     );
 
+
     testScenario([
       'M10 80 C 40 10, 65 10, 95 80 S 150 150, 180 80',
       'M10 80 Q 95 10 180 80'
     ]);
+
 
     testScenario([
       'M10 80 Q 52.5 10, 95 80 T 180 80',
       'M10 315 L 110 215 A 30 50 0 0 1 162.55 162.45',
       'M 100 150 L 172.55 152.45 A 30 50 -45 0 1 215.1 109.9 L 315 10'
     ]);
+
 
     testScenario([
       'M30 80 A 45 45, 0, 0, 0, 75 125 L 75 80 Z',

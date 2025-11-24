@@ -9,10 +9,15 @@
  * on each path (segment1, segment2) and the relative location of the
  * intersection on these segments (t1, t2).
  *
- * The path may be an SVG path string or a list of path components
+ * The path may be an SVG path string or an array of path components
  * such as `[ [ 'M', 0, 10 ], [ 'L', 20, 0 ] ]`.
  *
+ * For performance optimization, pre-parsed paths can be passed directly,
+ * {@link parsePath | the parsePath utility} can be used to pre-parse any path.
+ *
  * @example
+ *
+ * import findPathIntersections from 'path-intersection';
  *
  * var intersections = findPathIntersections(
  *   'M0,0L100,100',
@@ -35,6 +40,32 @@ declare function findPathIntersections(path1: Path, path2: Path): Intersection[]
 declare function findPathIntersections(path1: Path, path2: Path, justCount?: boolean): Intersection[] | number;
 
 export default findPathIntersections;
+
+/**
+ * Parses a path to an optimized format. The result can be cached
+ * and reused to maximize performance in subsequent intersection calculations.
+ *
+ * This is the recommended way to pre-parse paths for repeated use.
+ * Paths parsed this way will not be re-parsed when passed to
+ * {@link findPathIntersections | the intersect function}.
+ *
+ * @example
+ *
+ * import intersect, { parsePath } from 'path-intersection';
+ *
+ * // parse once
+ * const path1 = parsePath('M0,0L100,100');
+ * const path2 = parsePath('M0,100L100,0');
+ *
+ * // cache and reuse
+ * const result1 = intersect(path1, parsedPath2);
+ * const result2 = intersect(path2, parsedPath2);
+ *
+ * @param {Path} path - the path to parse
+ *
+ * @return {PathComponent[]} pre-parsed and optimized path
+ */
+export function parsePath(path: Path): PathComponent[];
 
 /**
  * A SVG path string, or it's array encoded version.

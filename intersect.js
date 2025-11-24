@@ -8,6 +8,7 @@
 
 /**
  * @typedef { import('./intersect.js').Path } Path
+ * @typedef { import('./intersect.js').PathComponent } PathComponent
  */
 
 
@@ -74,77 +75,84 @@ function cacher(f) {
   return newf;
 }
 
+/**
+ * Parse SVG path string and return an array of path components.
+ *
+ * @param {string} pathString
+ *
+ * @return {PathComponent[]}
+ */
 function parsePathString(pathString) {
 
   if (!pathString) {
     return null;
   }
 
-  var pth = paths(pathString);
-
-  if (pth.arr) {
-    return clone(pth.arr);
-  }
-
   var paramCounts = { a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0 },
-      data = [];
+      pathComponents = [];
 
-  if (isArray(pathString) && isArray(pathString[0])) { // rough assumption
-    data = clone(pathString);
-  }
+  String(pathString).replace(pathCommand, function(a, b, c) {
+    var params = [],
+        name = b.toLowerCase();
 
-  if (!data.length) {
-
-    String(pathString).replace(pathCommand, function(a, b, c) {
-      var params = [],
-          name = b.toLowerCase();
-
-      c.replace(pathValues, function(a, b) {
-        b && params.push(+b);
-      });
-
-      if (name == 'm' && params.length > 2) {
-        data.push([ b, ...params.splice(0, 2) ]);
-        name = 'l';
-        b = b == 'm' ? 'l' : 'L';
-      }
-
-      while (params.length >= paramCounts[name]) {
-        data.push([ b, ...params.splice(0, paramCounts[name]) ]);
-        if (!paramCounts[name]) {
-          break;
-        }
-      }
+    c.replace(pathValues, function(a, b) {
+      b && params.push(+b);
     });
-  }
 
-  data.toString = paths.toString;
-  pth.arr = clone(data);
+    if (name == 'm' && params.length > 2) {
+      pathComponents.push([ b, ...params.splice(0, 2) ]);
+      name = 'l';
+      b = b == 'm' ? 'l' : 'L';
+    }
 
-  return data;
-}
-
-function paths(ps) {
-  var p = paths.ps = paths.ps || {};
-
-  if (p[ps]) {
-    p[ps].sleep = 100;
-  } else {
-    p[ps] = {
-      sleep: 100
-    };
-  }
-
-  setTimeout(function() {
-    for (var key in p) {
-      if (hasProperty(p, key) && key != ps) {
-        p[key].sleep--;
-        !p[key].sleep && delete p[key];
+    while (params.length >= paramCounts[name]) {
+      pathComponents.push([ b, ...params.splice(0, paramCounts[name]) ]);
+      if (!paramCounts[name]) {
+        break;
       }
     }
   });
 
-  return p[ps];
+  pathComponents.toString = pathToString;
+
+  return pathComponents;
+}
+
+/**
+ * Checks if a path is already in absolute format.
+ * An absolute path has all uppercase commands.
+ *
+ * @param {PathComponent[]} pathComponents
+ * @return {boolean}
+ */
+function isPathAbsolute(pathComponents) {
+  for (var i = 0, ii = pathComponents.length; i < ii; i++) {
+    var command = pathComponents[i][0];
+    if (typeof command === 'string' && command !== command.toUpperCase()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Checks if a path is already in curve format.
+ * A curve path only contains 'M' and 'C' commands.
+ *
+ * @param {PathComponent[]} pathComponents
+ *
+ * @return {boolean}
+ */
+function isPathCurve(pathComponents) {
+  for (var i = 0, ii = pathComponents.length; i < ii; i++) {
+    var command = pathComponents[i][0];
+    if (command !== 'M' && command !== 'C') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 function rectBBox(x, y, width, height) {
@@ -170,8 +178,13 @@ function pathToString() {
   return this.join(',').replace(p2s, '$1');
 }
 
-function pathClone(pathArray) {
-  var res = clone(pathArray);
+/**
+ * @param {PathComponent[]} pathComponents
+ *
+ * @return {PathComponent[]}
+ */
+function pathClone(pathComponents) {
+  var res = clone(pathComponents);
   res.toString = pathToString;
   return res;
 }
@@ -390,10 +403,15 @@ function findBezierIntersections(bez1, bez2, justCount) {
  * on each path (segment1, segment2) and the relative location of the
  * intersection on these segments (t1, t2).
  *
- * The path may be an SVG path string or a list of path components
+ * The path may be an SVG path string or an array of path components
  * such as `[ [ 'M', 0, 10 ], [ 'L', 20, 0 ] ]`.
  *
+ * For performance optimization, pre-parsed paths can be passed directly,
+ * {@link parsePath | the parsePath utility} can be used to pre-parse any path.
+ *
  * @example
+ *
+ * import findPathIntersections from 'path-intersection';
  *
  * var intersections = findPathIntersections(
  *   'M0,0L100,100',
@@ -476,20 +494,27 @@ export default function findPathIntersections(path1, path2, justCount) {
   return res;
 }
 
+/**
+ * Test if path is a set of path components of the form
+ * `[ ['M', 0, 0 ], ['L', 100, 100], ...]`.
+ *
+ * @param {Path} path
+ *
+ * @return {boolean}
+ */
+function isPathComponents(path) {
+  return isArray(path) && isArray(path[0]);
+}
 
-function pathToAbsolute(pathArray) {
-  var pth = paths(pathArray);
+/**
+ * @param {PathComponent[]} pathComponents
+ *
+ * @return {PathComponent[]}
+ */
+function pathToAbsolute(pathComponents) {
 
-  if (pth.abs) {
-    return pathClone(pth.abs);
-  }
-
-  if (!isArray(pathArray) || !isArray(pathArray && pathArray[0])) { // rough assumption
-    pathArray = parsePathString(pathArray);
-  }
-
-  if (!pathArray || !pathArray.length) {
-    return [ [ 'M', 0, 0 ] ];
+  if (isPathAbsolute(pathComponents)) {
+    return pathComponents;
   }
 
   var res = [],
@@ -500,18 +525,18 @@ function pathToAbsolute(pathArray) {
       start = 0,
       pa0;
 
-  if (pathArray[0][0] == 'M') {
-    x = +pathArray[0][1];
-    y = +pathArray[0][2];
+  if (pathComponents[0][0] == 'M') {
+    x = +pathComponents[0][1];
+    y = +pathComponents[0][2];
     mx = x;
     my = y;
     start++;
     res[0] = [ 'M', x, y ];
   }
 
-  for (var r, pa, i = start, ii = pathArray.length; i < ii; i++) {
+  for (var r, pa, i = start, ii = pathComponents.length; i < ii; i++) {
     res.push(r = []);
-    pa = pathArray[i];
+    pa = pathComponents[i];
     pa0 = pa[0];
 
     if (pa0 != pa0.toUpperCase()) {
@@ -569,7 +594,6 @@ function pathToAbsolute(pathArray) {
   }
 
   res.toString = pathToString;
-  pth.abs = pathClone(res);
 
   return res;
 }
@@ -790,16 +814,24 @@ function curveBBox(x0, y0, x1, y1, x2, y2, x3, y3) {
   };
 }
 
+/**
+ * Convert path to a curve.
+ *
+ * @param {Path} path
+ *
+ * @return {PathComponent[]}
+ */
 function pathToCurve(path) {
 
-  var pth = paths(path);
-
-  // return cached curve, if existing
-  if (pth.curve) {
-    return pathClone(pth.curve);
+  if (!isPathComponents(path)) {
+    path = parsePathString(path);
   }
 
-  var curvedPath = pathToAbsolute(path),
+  if (isPathCurve(path)) {
+    return path;
+  }
+
+  var curvedPath = pathClone(pathToAbsolute(path)),
       attrs = { x: 0, y: 0, bx: 0, by: 0, X: 0, Y: 0, qx: null, qy: null },
       processPath = function(path, d, pathCommand) {
         var nx, ny;
@@ -923,8 +955,33 @@ function pathToCurve(path) {
     attrs.by = toFloat(seg[seglen - 3]) || attrs.y;
   }
 
-  // cache curve
-  pth.curve = pathClone(curvedPath);
-
   return curvedPath;
+}
+
+/**
+ * Parses a path to an optimized format. The result can be cached
+ * and reused to maximize performance in subsequent intersection calculations.
+ *
+ * This is the recommended way to pre-parse paths for repeated use.
+ * Paths parsed this way will not be re-parsed when passed to
+ * {@link findPathIntersections | the intersect function}.
+ *
+ * @example
+ *
+ * import intersect, { parsePath } from 'path-intersection';
+ *
+ * // parse once
+ * const path1 = parsePath('M0,0L100,100');
+ * const path2 = parsePath('M0,100L100,0');
+ *
+ * // cache and reuse
+ * const result1 = intersect(path1, parsedPath2);
+ * const result2 = intersect(path2, parsedPath2);
+ *
+ * @param {Path} path - the path to parse
+ *
+ * @return {PathComponent[]} pre-parsed and optimized path
+ */
+export function parsePath(path) {
+  return pathToCurve(path);
 }
