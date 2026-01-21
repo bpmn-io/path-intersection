@@ -6,6 +6,10 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+## 4.1.0
+
+* `CHORE`: simplify `exports` declaration
+
 ## 4.0.1
 
 * `CHORE`: pre-allocate dots array ([#32](https://github.com/bpmn-io/path-intersection/pull/32))
