@@ -25,39 +25,6 @@ var p2s = /,?([a-z]),?/gi,
 
 var isArray = Array.isArray || function(o) { return o instanceof Array; };
 
-function hasProperty(obj, property) {
-  return Object.prototype.hasOwnProperty.call(obj, property);
-}
-
-function repush(array, item) {
-  for (var i = 0, ii = array.length; i < ii; i++) if (array[i] === item) {
-    return array.push(array.splice(i, 1)[0]);
-  }
-}
-
-function cacher(f) {
-
-  function newf() {
-
-    var arg = Array.prototype.slice.call(arguments, 0),
-        args = arg.join('\u2400'),
-        cache = newf.cache = newf.cache || {},
-        count = newf.count = newf.count || [];
-
-    if (hasProperty(cache, args)) {
-      repush(count, args);
-      return cache[args];
-    }
-
-    count.length >= 1e3 && delete cache[count.shift()];
-    count.push(args);
-    cache[args] = f(...arguments);
-
-    return cache[args];
-  }
-  return newf;
-}
-
 /**
  * Parse SVG path string and return an array of path components.
  *
@@ -646,20 +613,19 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
       rad = PI / 180 * (+angle || 0),
       res = [],
       xy,
-      rotate = cacher(function(x, y, rad) {
-        var X = x * math.cos(rad) - y * math.sin(rad),
-            Y = x * math.sin(rad) + y * math.cos(rad);
-
-        return { x: X, y: Y };
-      });
+      cos = math.cos(rad),
+      sin = math.sin(rad),
+      rotate = function(x, y) {
+        return { x: x * cos - y * sin, y: x * sin + y * cos };
+      };
 
   if (!recursive) {
-    xy = rotate(x1, y1, -rad);
+    xy = rotate(x1, -y1);
     x1 = xy.x;
-    y1 = xy.y;
-    xy = rotate(x2, y2, -rad);
+    y1 = -xy.y;
+    xy = rotate(x2, -y2);
     x2 = xy.x;
-    y2 = xy.y;
+    y2 = -xy.y;
 
     var x = (x1 - x2) / 2,
         y = (y1 - y2) / 2;
@@ -736,7 +702,7 @@ function arcToCurve(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, r
     var newres = [];
 
     for (var i = 0, ii = res.length; i < ii; i++) {
-      newres[i] = i % 2 ? rotate(res[i - 1], res[i], rad).y : rotate(res[i], res[i + 1], rad).x;
+      newres[i] = i % 2 ? rotate(res[i - 1], res[i]).y : rotate(res[i], res[i + 1]).x;
     }
 
     return newres;
