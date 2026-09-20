@@ -219,8 +219,6 @@ function isPointInsideBBox(bbox, x, y) {
 }
 
 function isBBoxIntersect(bbox1, bbox2) {
-  bbox1 = rectBBox(bbox1);
-  bbox2 = rectBBox(bbox2);
   return isPointInsideBBox(bbox2, bbox1.x, bbox1.y)
     || isPointInsideBBox(bbox2, bbox1.x2, bbox1.y)
     || isPointInsideBBox(bbox2, bbox1.x, bbox1.y2)
@@ -312,9 +310,9 @@ function fixError(number) {
   return Math.round(number * 100000000000) / 100000000000;
 }
 
-function findBezierIntersections(bez1, bez2, justCount) {
-  var bbox1 = bezierBBox(bez1),
-      bbox2 = bezierBBox(bez2);
+function findBezierIntersections(bez1, bez2, justCount, bbox1, bbox2) {
+  bbox1 = bbox1 || bezierBBox(bez1);
+  bbox2 = bbox2 || bezierBBox(bez2);
 
   if (!isBBoxIntersect(bbox1, bbox2)) {
     return justCount ? 0 : [];
@@ -335,13 +333,15 @@ function findBezierIntersections(bez1, bez2, justCount) {
       i, j;
 
   for (i = 0; i < n1 + 1; i++) {
-    var p = findDotsAtSegment(...bez1, i / n1);
-    dots1[i] = { x: p.x, y: p.y, t: i / n1 };
+    var t = i / n1,
+        p = findDotsAtSegment(...bez1, t);
+    dots1[i] = { x: p.x, y: p.y, t: t };
   }
 
   for (i = 0; i < n2 + 1; i++) {
-    p = findDotsAtSegment(...bez2, i / n2);
-    dots2[i] = { x: p.x, y: p.y, t: i / n2 };
+    t = i / n2;
+    p = findDotsAtSegment(...bez2, t);
+    dots2[i] = { x: p.x, y: p.y, t: t };
   }
 
   for (i = 0; i < n1; i++) {
@@ -425,69 +425,83 @@ function findBezierIntersections(bez1, bez2, justCount) {
  * @return {Intersection[]|number}
  */
 export default function findPathIntersections(path1, path2, justCount) {
-  path1 = pathToCurve(path1);
-  path2 = pathToCurve(path2);
-
-  var x1, y1, x2, y2, x1m, y1m, x2m, y2m, bez1, bez2,
+  var segments1 = pathToSegments(pathToCurve(path1)),
+      segments2 = pathToSegments(pathToCurve(path2)),
       res = justCount ? 0 : [];
 
-  for (var i = 0, ii = path1.length; i < ii; i++) {
-    var pi = path1[i];
+  for (var i = 0, ii = segments1.length; i < ii; i++) {
+    var s1 = segments1[i];
 
-    if (pi[0] == 'M') {
-      x1 = x1m = pi[1];
-      y1 = y1m = pi[2];
-    } else {
+    for (var j = 0, jj = segments2.length; j < jj; j++) {
+      var s2 = segments2[j];
 
-      if (pi[0] == 'C') {
-        bez1 = [ x1, y1, ...pi.slice(1) ];
-        x1 = bez1[6];
-        y1 = bez1[7];
-      } else {
-        bez1 = [ x1, y1, x1, y1, x1m, y1m, x1m, y1m ];
-        x1 = x1m;
-        y1 = y1m;
+      if (!isBBoxIntersect(s1.bbox, s2.bbox)) {
+        continue;
       }
 
-      for (var j = 0, jj = path2.length; j < jj; j++) {
-        var pj = path2[j];
+      var intr = findBezierIntersections(s1.bez, s2.bez, justCount, s1.bbox, s2.bbox);
 
-        if (pj[0] == 'M') {
-          x2 = x2m = pj[1];
-          y2 = y2m = pj[2];
-        } else {
+      if (justCount) {
+        res += intr;
+      } else {
 
-          if (pj[0] == 'C') {
-            bez2 = [ x2, y2, ...pj.slice(1) ];
-            x2 = bez2[6];
-            y2 = bez2[7];
-          } else {
-            bez2 = [ x2, y2, x2, y2, x2m, y2m, x2m, y2m ];
-            x2 = x2m;
-            y2 = y2m;
-          }
+        for (var k = 0, kk = intr.length; k < kk; k++) {
+          intr[k].segment1 = s1.segment;
+          intr[k].segment2 = s2.segment;
+          intr[k].bez1 = s1.bez;
+          intr[k].bez2 = s2.bez;
 
-          var intr = findBezierIntersections(bez1, bez2, justCount);
-
-          if (justCount) {
-            res += intr;
-          } else {
-
-            for (var k = 0, kk = intr.length; k < kk; k++) {
-              intr[k].segment1 = i;
-              intr[k].segment2 = j;
-              intr[k].bez1 = bez1;
-              intr[k].bez2 = bez2;
-            }
-
-            res = res.concat(intr);
-          }
+          res.push(intr[k]);
         }
       }
     }
   }
 
   return res;
+}
+
+/**
+ * Convert a curved path (only 'M' and 'C' commands) to a list of
+ * bezier segments, each annotated with its bounding box and the
+ * index of the originating path segment.
+ *
+ * @param {PathComponent[]} pathComponents
+ *
+ * @return {{ bez: number[], bbox: object, segment: number }[]}
+ */
+function pathToSegments(pathComponents) {
+  var segments = [],
+      x = 0, y = 0, xm = 0, ym = 0;
+
+  for (var i = 0, ii = pathComponents.length; i < ii; i++) {
+    var pi = pathComponents[i],
+        bez;
+
+    if (pi[0] == 'M') {
+      x = xm = pi[1];
+      y = ym = pi[2];
+
+      continue;
+    }
+
+    if (pi[0] == 'C') {
+      bez = [ x, y, pi[1], pi[2], pi[3], pi[4], pi[5], pi[6] ];
+      x = pi[5];
+      y = pi[6];
+    } else {
+      bez = [ x, y, x, y, xm, ym, xm, ym ];
+      x = xm;
+      y = ym;
+    }
+
+    segments.push({
+      bez: bez,
+      bbox: bezierBBox(bez),
+      segment: i
+    });
+  }
+
+  return segments;
 }
 
 /**
