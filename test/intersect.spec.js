@@ -376,6 +376,25 @@ describe('path-intersection', function() {
     });
 
 
+    test('many segments, disjoint bounding boxes', {
+
+      // ensure segment pairs skipped via bounding box precheck
+      // do not yield (or hide) intersections
+      p0: 'M0,0 L100,0 L100,100 L0,100 Z M200,200 L300,200 L300,300 L200,300 Z',
+      p1: 'M50,-50 L50,150 L150,50 L-50,50 Z M400,400 L500,400 L500,500 L400,500 Z',
+      expectedIntersections: [
+        { x: 50, y: -0, segment1: 1, segment2: 1 },
+        { x: -0, y: -0, segment1: 1, segment2: 4 },
+        { x: 100, y: 100, segment1: 2, segment2: 2 },
+        { x: 100, y: 50, segment1: 2, segment2: 3 },
+        { x: 50, y: 100, segment1: 3, segment2: 1 },
+        { x: 100, y: 100, segment1: 3, segment2: 2 },
+        { x: -0, y: 50, segment1: 4, segment2: 3 },
+        { x: -0, y: 0, segment1: 4, segment2: 4 }
+      ]
+    });
+
+
     test('two ellipses', {
       p0: 'M2.6146209161795992e-14,73 A427,427 -90,0,0 -7.843862748538798e-14,927 A427,427 -90,1,0 2.6146209161795992e-14,73',
       p1: 'M71.048,16.789855835444428 A439.5,439.5 0,0,1 928.6918008943089,15.63106872689174 A439.5,439.5 0,1,1 71.048,16.789855835444428',
