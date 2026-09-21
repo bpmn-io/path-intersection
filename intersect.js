@@ -21,7 +21,23 @@ var p2s = /,?([a-z]),?/gi,
     pow = math.pow,
     abs = math.abs,
     pathCommand = /([a-z])[\s,]*((-?\d*\.?\d*(?:e[-+]?\d+)?[\s]*,?[\s]*)+)/ig,
-    pathValues = /(-?\d*\.?\d*(?:e[-+]?\d+)?)[\s]*,?[\s]*/ig;
+    pathValues = /(-?\d*\.?\d*(?:e[-+]?\d+)?)[\s]*,?[\s]*/ig,
+
+    // arc parameters: flags are single digits and may adjoin numbers
+    // (`A 5 5 0 10 10 10` ≡ `A 5 5 0 1 0 10 10`);
+    // numbers match greedily (atomically), mirroring reference SVG parsers
+    arcNumber = '-?(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][-+]?\\d+)?',
+    arcSeparator = '[\\s]*,?[\\s]*',
+    arcValues = new RegExp(
+      '(?=(' + arcNumber + '))\\1' + arcSeparator +
+      '(?=(' + arcNumber + '))\\2' + arcSeparator +
+      '(?=(' + arcNumber + '))\\3' + arcSeparator +
+      '([01])' + arcSeparator +
+      '([01])' + arcSeparator +
+      '(?=(' + arcNumber + '))\\6' + arcSeparator +
+      '(?=(' + arcNumber + '))\\7' + arcSeparator,
+      'g'
+    );
 
 var isArray = Array.isArray || function(o) { return o instanceof Array; };
 
@@ -45,8 +61,10 @@ function parsePathString(pathString) {
     var params = [],
         name = b.toLowerCase();
 
-    c.replace(pathValues, function(a, b) {
-      b && params.push(+b);
+    c.replace(name == 'a' ? arcValues : pathValues, function() {
+      for (var i = 1; i < arguments.length - 2; i++) {
+        arguments[i] && params.push(+arguments[i]);
+      }
     });
 
     if (name == 'm' && params.length > 2) {
