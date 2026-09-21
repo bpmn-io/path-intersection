@@ -121,6 +121,61 @@ describe('path-intersection', function() {
     });
 
 
+    it('should parse elliptical arc flags without separators', function() {
+
+      // given
+      var spaced = parsePath('M0,0A10,10,0,1,0,20,0');
+      var compact = parsePath('M0,0A10,10,0,10,20,0');
+      var glued = parsePath('M0,0A10,10,0,1020,0');
+
+      // then
+      expect(compact).to.eql(spaced);
+      expect(glued).to.eql(spaced);
+    });
+
+
+    it('should parse all adjacent elliptical arc flag pairs', function() {
+
+      // given
+      var flags = [ '00', '01', '10', '11' ];
+
+      flags.forEach(function(pair) {
+        var a = pair.charAt(0);
+        var b = pair.charAt(1);
+
+        // when
+        var spaced = parsePath('M0,0A10,10,0,' + a + ',' + b + ',20,0');
+        var compact = parsePath('M0,0A10,10,0,' + pair + ',20,0');
+
+        // then
+        expect(compact).to.eql(spaced);
+      });
+    });
+
+
+    it('should parse arc with uppercase scientific notation', function() {
+
+      // given
+      var lower = parsePath('M0,0A10,10,0,1,0,1e2,0');
+      var upper = parsePath('M0,0A10,10,0,1,0,1E2,0');
+
+      // then
+      expect(upper).to.eql(lower);
+    });
+
+
+    it('should greedily parse numbers adjacent to arc flags', function() {
+
+      // given
+      // rotation greedily consumes `0111` as `111`, not `0` + flags `11`;
+      // the arc segment fails to parse, matching reference SVG parsers
+      var greedy = parsePath('M0,0A5,5,0111,5,5');
+
+      // then
+      expect(greedy).to.eql(parsePath('M0,0'));
+    });
+
+
     it('should provide performance improvement with parsePath', function() {
 
       // given
@@ -248,6 +303,15 @@ describe('path-intersection', function() {
       expectedIntersections: [
         { x: 184, y: 101, segment1: 1, segment2: 2 },
         { x: 187, y: 103, segment1: 1, segment2: 2 }
+      ]
+    });
+
+
+    test('line with circle (compact arc flags)', {
+      p0: 'M150,150m0,-18a18,18,0,110,36a18,18,0,110,-36z',
+      p1: 'M100,100L150,150',
+      expectedIntersections: [
+        { x: 137, y: 137, segment1: 5, segment2: 1 }
       ]
     });
 
