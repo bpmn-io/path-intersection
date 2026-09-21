@@ -6,6 +6,8 @@ All notable changes to [path-intersection](https://github.com/bpmn-io/path-inter
 
 ___Note:__ Yet to be released changes appear here._
 
+* `FIX`: parse elliptical arc flags without separators ([#21](https://github.com/bpmn-io/path-intersection/issues/21))
+
 ## 4.2.0
 
 * `FEAT`: improve intersection performance ([#33](https://github.com/bpmn-io/path-intersection/pull/33))

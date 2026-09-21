@@ -21,9 +21,119 @@ var p2s = /,?([a-z]),?/gi,
     pow = math.pow,
     abs = math.abs,
     pathCommand = /([a-z])[\s,]*((-?\d*\.?\d*(?:e[-+]?\d+)?[\s]*,?[\s]*)+)/ig,
-    pathValues = /(-?\d*\.?\d*(?:e[-+]?\d+)?)[\s]*,?[\s]*/ig;
+    pathValues = /(-?\d*\.?\d*(?:e[-+]?\d+)?)[\s]*,?[\s]*/ig,
+    pathNumber = /^-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/i;
 
 var isArray = Array.isArray || function(o) { return o instanceof Array; };
+
+function skipCommaWsp(str, i) {
+  while (i < str.length) {
+    var code = str.charCodeAt(i);
+
+    // space, tab, CR, LF, comma
+    if (code === 32 || code === 9 || code === 13 || code === 10 || code === 44) {
+      i++;
+      continue;
+    }
+
+    break;
+  }
+
+  return i;
+}
+
+function parseNumberAt(str, i) {
+  var match = pathNumber.exec(str.slice(i));
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    value: +match[0],
+    next: i + match[0].length
+  };
+}
+
+function parseFlagAt(str, i) {
+  var ch = str.charAt(i);
+
+  if (ch === '0' || ch === '1') {
+    return {
+      value: +ch,
+      next: i + 1
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Parse elliptical-arc parameters.
+ *
+ * Flags are a single `0`/`1` and, per the SVG path BNF, may sit next to
+ * each other or the following coordinate (`A 5 5 0 10 10 10` ≡
+ * `A 5 5 0 1 0 10 10`).
+ *
+ * @param {string} values
+ *
+ * @return {number[]}
+ */
+function parseArcParams(values) {
+  var params = [],
+      i = 0,
+      len = values.length,
+      rx, ry, angle, large, sweep, x, y;
+
+  while ((i = skipCommaWsp(values, i)) < len) {
+
+    rx = parseNumberAt(values, i);
+    if (!rx) {
+      break;
+    }
+
+    i = skipCommaWsp(values, rx.next);
+    ry = parseNumberAt(values, i);
+    if (!ry) {
+      break;
+    }
+
+    i = skipCommaWsp(values, ry.next);
+    angle = parseNumberAt(values, i);
+    if (!angle) {
+      break;
+    }
+
+    i = skipCommaWsp(values, angle.next);
+    large = parseFlagAt(values, i);
+    if (!large) {
+      break;
+    }
+
+    i = skipCommaWsp(values, large.next);
+    sweep = parseFlagAt(values, i);
+    if (!sweep) {
+      break;
+    }
+
+    i = skipCommaWsp(values, sweep.next);
+    x = parseNumberAt(values, i);
+    if (!x) {
+      break;
+    }
+
+    i = skipCommaWsp(values, x.next);
+    y = parseNumberAt(values, i);
+    if (!y) {
+      break;
+    }
+
+    i = y.next;
+    params.push(rx.value, ry.value, angle.value, large.value, sweep.value, x.value, y.value);
+  }
+
+  return params;
+}
 
 /**
  * Parse SVG path string and return an array of path components.
@@ -45,9 +155,13 @@ function parsePathString(pathString) {
     var params = [],
         name = b.toLowerCase();
 
-    c.replace(pathValues, function(a, b) {
-      b && params.push(+b);
-    });
+    if (name == 'a') {
+      params = parseArcParams(c);
+    } else {
+      c.replace(pathValues, function(a, b) {
+        b && params.push(+b);
+      });
+    }
 
     if (name == 'm' && params.length > 2) {
       pathComponents.push([ b, ...params.splice(0, 2) ]);

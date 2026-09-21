@@ -121,6 +121,38 @@ describe('path-intersection', function() {
     });
 
 
+    it('should parse elliptical arc flags without separators', function() {
+
+      // given
+      var spaced = parsePath('M0,0A10,10,0,1,0,20,0');
+      var compact = parsePath('M0,0A10,10,0,10,20,0');
+      var glued = parsePath('M0,0A10,10,0,1020,0');
+
+      // then
+      expect(compact).to.eql(spaced);
+      expect(glued).to.eql(spaced);
+    });
+
+
+    it('should parse all adjacent elliptical arc flag pairs', function() {
+
+      // given
+      var flags = [ '00', '01', '10', '11' ];
+
+      flags.forEach(function(pair) {
+        var a = pair.charAt(0);
+        var b = pair.charAt(1);
+
+        // when
+        var spaced = parsePath('M0,0A10,10,0,' + a + ',' + b + ',20,0');
+        var compact = parsePath('M0,0A10,10,0,' + pair + ',20,0');
+
+        // then
+        expect(compact).to.eql(spaced);
+      });
+    });
+
+
     it('should provide performance improvement with parsePath', function() {
 
       // given
@@ -254,6 +286,15 @@ describe('path-intersection', function() {
 
     test('line with circle', {
       p0: 'M150,150m0,-18a18,18,0,1,1,0,36a18,18,0,1,1,0,-36z',
+      p1: 'M100,100L150,150',
+      expectedIntersections: [
+        { x: 137, y: 137, segment1: 5, segment2: 1 }
+      ]
+    });
+
+
+    test('line with circle (compact arc flags)', {
+      p0: 'M150,150m0,-18a18,18,0,110,36a18,18,0,110,-36z',
       p1: 'M100,100L150,150',
       expectedIntersections: [
         { x: 137, y: 137, segment1: 5, segment2: 1 }
