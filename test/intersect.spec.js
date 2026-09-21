@@ -134,19 +134,22 @@ describe('path-intersection', function() {
       );
 
 
+      var iterations = 100;
+
       // assume - warm up
       timeParse(p1, p2, iterations);
+
+      var parsedP1 = parsePath(p1);
+      var parsedP2 = parsePath(p2);
 
       var results = [];
 
       // repeat a couple of times
       for (var i = 0; i < 100; i++) {
 
-        var iterations = 100;
-
         // when
         var stringTime = timeParse(p1, p2, iterations);
-        var cachedTime = timeParse(parsePath(p1), parsePath(p1), iterations);
+        var cachedTime = timeParse(parsedP1, parsedP2, iterations);
 
         // then
         var speedup = stringTime / cachedTime;
@@ -156,17 +159,26 @@ describe('path-intersection', function() {
           cachedTime,
           speedup
         });
-
-        expect(speedup).to.be.at.least(6);
       }
 
+      // assert on the aggregated measurements, not individual iterations;
+      // with a fast implementation single timings are dominated by noise
+      var totalStringTime = results.reduce((sum, r) => sum + r.stringTime, 0);
+      var totalCachedTime = results.reduce((sum, r) => sum + r.cachedTime, 0);
+
       results.push({
-        stringTime: results.reduce((sum, r) => sum + r.stringTime, 0) / results.length,
-        cachedTime: results.reduce((sum, r) => sum + r.cachedTime, 0) / results.length,
-        speedup: results.reduce((sum, r) => sum + r.speedup, 0) / results.length,
+        stringTime: totalStringTime / results.length,
+        cachedTime: totalCachedTime / results.length,
+        speedup: totalStringTime / totalCachedTime,
       });
 
       console.table(results);
+
+      // the speedup factor depends on how much of the overall time is spent
+      // parsing path strings vs. computing intersections; recent performance
+      // improvements to the intersection logic reduced it, so only assert a
+      // conservative lower bound
+      expect(totalStringTime / totalCachedTime).to.be.at.least(2);
     });
 
   });
